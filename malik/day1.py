@@ -1,4 +1,4 @@
-PATH = "/Users/malikwoods/Developer/advent_of_code_2022/_inputs/day-1-input.txt"
+PATH = "./day-1-input.txt"
 
 from collections import defaultdict
 
