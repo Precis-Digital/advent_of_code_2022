@@ -10,8 +10,13 @@ def get_elves(filepath: str):
         calories = [int(x) for x in e.split("\n")]
         totals.append(sum(calories))
 
-    return max(totals)
+    totals.sort()
+    return totals
 
 if __name__ == "__main__":
     resp = get_elves("hungry.txt")
-    print(resp)
+    p1 = resp[-1]
+    p2 = sum(resp[-3:])
+
+    print(p1)
+    print(p2)
