@@ -1,3 +1,6 @@
+import time
+
+
 def get_results_from_file(file_name: str) -> list[int]:
     with open(file_name, "r") as f:
         lines = f.readlines()
@@ -39,6 +42,7 @@ def determine_action(oppo_action: str, expected_output: str):
             return k
 
 
+start = time.time()
 # Sample 1 - expected 15
 print(sum([calc_score_from_strategy(rnd) for rnd in get_results_from_file("sample_input.txt")]))
 
@@ -50,3 +54,5 @@ print(sum([calc_score_from_strategy(rnd, True) for rnd in get_results_from_file(
 
 # Part 2
 print(sum([calc_score_from_strategy(rnd, True) for rnd in get_results_from_file("input.txt")]))
+
+print(f"Finished in {time.time() - start} seconds") # Finished in 0.005616188049316406 seconds
