@@ -17,12 +17,12 @@ OUTCOME_OPPONENT_MAP = {"Win": LOSES_TO, "Lose": BEATS, "Draw": DRAWS}
 GAME_SCORES = {"Win": 6, "Draw": 3, "Lose": 0}
 
 
-def rock_paper_scissors(opponent: str, you: str) -> int:
+def rock_paper_scissors(opponent: str, you: str) -> str:
     if BEATS[opponent] == you:
-        return GAME_SCORES["Lose"]
+        return "Lose"
     if BEATS[you] == opponent:
-        return GAME_SCORES["Win"]
-    return GAME_SCORES["Draw"]
+        return "Win"
+    return "Draw"
 
 
 def translate_game(
@@ -36,8 +36,8 @@ def translate_game(
 
 def part_1(game: str) -> int:
     opponent, you = translate_game(map_1=RPS_MAP, map_2=RPS_MAP, game=game)
-    game_score = rock_paper_scissors(opponent=opponent, you=you)
-    return SHAPE_SCORES[you] + game_score
+    outcome = rock_paper_scissors(opponent=opponent, you=you)
+    return SHAPE_SCORES[you] + GAME_SCORES[outcome]
 
 
 def part_2(game: str) -> int:
