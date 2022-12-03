@@ -4,7 +4,7 @@ def get_rucksacks_from_file(file_name: str) -> list[list]:
 
     return [parse_rucksack(rucksack.strip()) for rucksack in rucksacks]
 
-LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+LETTERS = list(map(chr, range(97, 123))) + [item.upper() for item in list(map(chr, range(97, 123)))]
 
 def parse_rucksack(rucksack: str) -> list:
     comp1 = rucksack[:len(rucksack)//2]
