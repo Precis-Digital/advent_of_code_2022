@@ -22,7 +22,7 @@ def solution_1(data: list[str]) -> int:
     total_character_score = 0
     for row in data:
         comp1, comp2 = get_compartments(rucksack=row)
-        intersecting_items = set(comp1).intersection(comp2)
+        intersecting_items = set(comp1) & set(comp2)
         item = next(iter(intersecting_items), None)
         total_character_score += character_to_int(char=item)
     return total_character_score
@@ -32,7 +32,7 @@ def solution_2(data: list[str]) -> int:
     total_character_score = 0
     for i in range(0, len(data), 3):
         elf1, elf2, elf3 = data[i], data[i + 1], data[i + 2]
-        shared_items = set(elf1).intersection(elf2).intersection(elf3)
+        shared_items = set(elf1) & set(elf2) & set(elf3)
         item = next(iter(shared_items), None)
         total_character_score += character_to_int(char=item)
     return total_character_score
