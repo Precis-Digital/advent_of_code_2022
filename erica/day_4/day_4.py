@@ -43,5 +43,5 @@ if __name__ == "__main__":
         )
         part_2 += ranges_overlap(range_1=elf_ranges["elf1"], range_2=elf_ranges["elf2"])
 
-    print(part_1)  # part 1: 471
-    print(part_2)  # part 2: 888
+    print(f"part 1: {part_1}")  # part 1: 471
+    print(f"part 2: {part_2}")  # part 2: 888
