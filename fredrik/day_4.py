@@ -16,7 +16,7 @@ def either_section_fully_contains(range1: range, range2: range, /) -> bool:
 
 
 def find_overlap(range1: range, range2: range, /) -> range:
-    return range(max(range1[0], range2[0]), min(range1.stop, range2.stop))
+    return range(max(range1.start, range2.start), min(range1.stop, range2.stop))
 
 
 def sections_overlap(range1: range, range2: range, /) -> bool:
