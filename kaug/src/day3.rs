@@ -1,8 +1,8 @@
-use std::{fs, str::Split};
+use std::{fs, str::Lines};
 use std::str::{self, Chars};
 
 fn question_one(input: &str) -> i32 {
-	let rucksacks: Split<&str> = input.split("\n");
+	let rucksacks: Lines = input.lines();
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks {
 		let (a, b) = rucksack.split_at(rucksack.len() / 2);
@@ -15,7 +15,7 @@ fn question_one(input: &str) -> i32 {
 }
 
 fn question_two(input: &str) -> i32 {
-	let rucksacks: Vec<&str> = input.split("\n").collect();
+	let rucksacks: Vec<&str> = input.lines().collect();
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks.chunks(3) {
 		for c in rucksack[0].chars() {

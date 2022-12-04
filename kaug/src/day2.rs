@@ -1,8 +1,8 @@
-use std::{fs, str::Split};
+use std::{fs, str::Lines};
 
 fn question_one(input: &str) -> i32 {
 	let mut sum: i32 = 0;
-	let games: Split<&str> = input.split("\n");
+	let games: Lines = input.lines();
 	for game in games {
 		sum += match game {
 			"A X" => 4,
@@ -22,7 +22,7 @@ fn question_one(input: &str) -> i32 {
 
 fn question_two(input: &str) -> i32 {
 	let mut sum: i32 = 0;
-	let games: Split<&str> = input.split("\n");
+	let games: Lines = input.lines();
 	for game in games {
 		sum += match game {
 			"A X" => 3,

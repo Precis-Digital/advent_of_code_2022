@@ -1,16 +1,17 @@
-use std::{fs, str::Split};
+use std::{fs, str::Lines};
 
 pub fn main() {
 	let day_one_content: String = fs::read_to_string("./input/day1.txt").unwrap();
-	let elves: Split<&str> = day_one_content.split("\n\n");
+	let lines: Lines = day_one_content.lines();
 	let mut sums: Vec<i32> = Vec::new();
-	for elf in elves {
-		let kcal: Split<&str> = elf.split("\n");
-		let mut sum: i32 = 0;
-		for item in kcal {
-			sum = sum + item.parse::<i32>().unwrap();
+	let mut sum: i32 = 0;
+	for kcal in lines {
+		if kcal != "" {
+			sum += kcal.parse::<i32>().unwrap();
+		} else {
+			sums.push(sum);
+			sum = 0;
 		}
-		sums.push(sum)
 	}
 	sums.sort();
 	sums.reverse();
