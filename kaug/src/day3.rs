@@ -1,4 +1,3 @@
-use std::time::Instant;
 use std::{fs, str::Split};
 use std::str::{self, Chars};
 
@@ -37,14 +36,8 @@ fn score(item: char) -> i32 {
 	}
 }
 
-pub fn main() {
-	let start = Instant::now();
-		
+pub fn main() {		
 	let day_two_content: String = fs::read_to_string("./input/day3.txt").unwrap();
-	let q1 = question_one(&day_two_content);
-	let q2 = question_two(&day_two_content);
-	
-	println!("Day 3 | Question 1: {}", q1);
-	println!("Day 3 | Question 2: {}", q2);
-	println!("Day 3 | Duration: {:?}", start.elapsed());
+	println!("Day 3 | Question 1: {}", question_one(&day_two_content));
+	println!("Day 3 | Question 2: {}", question_two(&day_two_content));
 }
