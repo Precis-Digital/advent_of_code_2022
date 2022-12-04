@@ -29,18 +29,19 @@ def generate_elf_pairs_task_range(cleaning_pair: str) -> dict:
     return elfs_range
 
 
-cleaning_schema = get_cleaning_schema("erica/day_4/input_data.txt")
-elf_pairs_tasks_range = [
-    generate_elf_pairs_task_range(cleaning_pair=pair) for pair in cleaning_schema
-]
+if __name__ == "__main__":
+    cleaning_schema = get_cleaning_schema("erica/day_4/input_data.txt")
+    elf_pairs_tasks_range = [
+        generate_elf_pairs_task_range(cleaning_pair=pair) for pair in cleaning_schema
+    ]
 
-part_1 = 0
-part_2 = 0
-for elf_ranges in elf_pairs_tasks_range:
-    part_1 += ranges_are_sub_ranges(
-        range_1=elf_ranges["elf1"], range_2=elf_ranges["elf2"]
-    )
-    part_2 += ranges_overlap(range_1=elf_ranges["elf1"], range_2=elf_ranges["elf2"])
+    part_1 = 0
+    part_2 = 0
+    for elf_ranges in elf_pairs_tasks_range:
+        part_1 += ranges_are_sub_ranges(
+            range_1=elf_ranges["elf1"], range_2=elf_ranges["elf2"]
+        )
+        part_2 += ranges_overlap(range_1=elf_ranges["elf1"], range_2=elf_ranges["elf2"])
 
-print(part_1)  # part 1: 471
-print(part_2)  # part 2: 888
+    print(part_1)  # part 1: 471
+    print(part_2)  # part 2: 888
