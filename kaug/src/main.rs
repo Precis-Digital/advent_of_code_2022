@@ -1,11 +1,11 @@
-mod day1;
-mod day2;
-mod day3;
-mod day4;
+use std::env;
+use kaug::Solution;
+
 
 fn main() {
-	day1::main();
-	day2::main();
-	day3::main();
-	day4::main();
+	let args: Vec<String> = env::args().collect();
+
+	let s: Solution = Solution::build(&args).unwrap();
+
+	println!("Day {} | Question 1: {} | Question 2: {}", s.day, s.answer.0, s.answer.1)
 }
