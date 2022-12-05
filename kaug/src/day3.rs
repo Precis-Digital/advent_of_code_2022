@@ -1,8 +1,7 @@
-use std::{fs, str::Lines};
+use std::fs;
 use std::str::{self, Chars};
 
-fn question_one(input: &str) -> i32 {
-	let rucksacks: Lines = input.lines();
+fn question_one(rucksacks: &Vec<&str>) -> i32 {
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks {
 		let (a, b) = rucksack.split_at(rucksack.len() / 2);
@@ -14,8 +13,7 @@ fn question_one(input: &str) -> i32 {
 	return sum;
 }
 
-fn question_two(input: &str) -> i32 {
-	let rucksacks: Vec<&str> = input.lines().collect();
+fn question_two(rucksacks: &Vec<&str>) -> i32 {
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks.chunks(3) {
 		for c in rucksack[0].chars() {
@@ -36,8 +34,8 @@ fn score(item: char) -> i32 {
 	}
 }
 
-pub fn main() {		
-	let day_two_content: String = fs::read_to_string("./input/day3.txt").unwrap();
-	println!("Day 3 | Question 1: {}", question_one(&day_two_content));
-	println!("Day 3 | Question 2: {}", question_two(&day_two_content));
+pub fn main() -> (i32, i32) {		
+	let input: String = fs::read_to_string("./input/day3.txt").unwrap();
+	let rucksacks: Vec<&str> = input.lines().collect();
+	(question_one(&rucksacks), question_two(&rucksacks))
 }
