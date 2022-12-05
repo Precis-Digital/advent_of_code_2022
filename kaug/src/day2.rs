@@ -1,11 +1,9 @@
-use std::{fs, str::Split, time::Instant};
+use std::fs;
 
-fn question_one(input: &str) -> i32 {
+fn question_one(games: &Vec<&str>) -> i32 {
 	let mut sum: i32 = 0;
-	let games: Split<&str> = input.split("\n");
-
 	for game in games {
-		sum += match game {
+		sum += match game.to_owned() {
 			"A X" => 4,
 			"A Y" => 8,
 			"A Z" => 3,
@@ -18,16 +16,13 @@ fn question_one(input: &str) -> i32 {
 			_ => 0
 		};
 	}
-
 	return sum;
 }
 
-fn question_two(input: &str) -> i32 {
+fn question_two(games: &Vec<&str>) -> i32 {
 	let mut sum: i32 = 0;
-	let games: Split<&str> = input.split("\n");
-
 	for game in games {
-		sum += match game {
+		sum += match game.to_owned() {
 			"A X" => 3,
 			"A Y" => 4,
 			"A Z" => 8,
@@ -40,21 +35,11 @@ fn question_two(input: &str) -> i32 {
 			_ => 0
 		};
 	}
-
 	return sum;
 }
 
-pub fn main() {
-	// start exec timer
-	let start = Instant::now();
-
-	let day_two_content: String = fs::read_to_string("./input/day2.txt").unwrap();
-	let q1 = question_one(&day_two_content);
-	let q2 = question_two(&day_two_content);
-	println!("Day 2 | Question 1: {}", q1);
-	println!("Day 2 | Question 2: {}", q2);
-
-	// end exec timer
-	let duration = start.elapsed();
-	println!("Day 2 | Duration: {:?}", duration);
+pub fn main() -> (i32, i32) {
+	let input: String = fs::read_to_string("./input/day2.txt").unwrap();
+	let games: Vec<&str> = input.lines().collect();
+	(question_one(&games), question_two(&games))
 }
