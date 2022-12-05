@@ -22,54 +22,36 @@ cleaned_list = []
 for i in game_moves_list:
     cleaned_list.append(replace_all(i, replace_dict))
 
-win_score = 6
-equal_score = 3
-score_list = []
-for round in cleaned_list:
-    elf_move,my_move = round.split()
-    if my_move == elf_move:
-        score_list.extend([equal_score, int(my_move)])
-    elif my_move == "1":
-        if elf_move == "3":
-            score_list.extend([win_score, int(my_move)])
-        else:
-            score_list.append(int(my_move))
-    elif my_move == "2":
-        if  elf_move == "1":
-            score_list.extend([win_score, int(my_move)])
-        else:
-            score_list.append(int(my_move))
-    elif my_move == "3":
-        if elf_move == "1":
-            score_list.extend([win_score, int(my_move)])
-        elif elf_move == "2":
-            score_list.append(int(my_move))
 
-print("PART 1: Total score is", sum(score_list))
+winning_elf_move_dict = {
+    "1": "2",
+    "2": "3",
+    "3": "1"
+}
 
 win_score = 6
-equal_score = 3
-score_list = []
-# Part 2:
+draw_score = 3
+score = 0
+
+def generalised_if(elf_move, my_move, winning_elf_move):
+    global score
+    if elf_move == winning_elf_move:
+        score += int(my_move)
+    elif elf_move == my_move:
+        score += int(my_move) + draw_score
+    else:
+        score += win_score + int(my_move)
+
 for round in cleaned_list:
     elf_move,my_move = round.split()
-    if my_move == "2":
-        score_list.extend([equal_score,int(elf_move)])
-    elif my_move == "1":
-        if elf_move == "1":
-            score_list.append(3)
-        elif elf_move == "2":
-            score_list.append(1)
-        else:
-            score_list.append(2)
-    elif my_move == "3":
-        score_list.append(win_score)
-        if elf_move == "1":
-            score_list.append(2)
-        elif elf_move == "2":
-            score_list.append(3)
-        else:
-            score_list.append(1)
+    generalised_if(elf_move,my_move, winning_elf_move_dict[my_move])
 
+print("PART 1: Total score is", score) # 13675
 
-print("PART 2: Total score is", sum(score_list))
+strategy_move_dict = {
+    "1": "2",
+    "2": "3",
+    "3": "1"
+}
+
+print("PART 2:", score) # 14184
