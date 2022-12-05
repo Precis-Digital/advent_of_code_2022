@@ -1,7 +1,7 @@
 from shared import utils
 
 
-def main():
+def main() -> None:
     data = utils.read_input_to_string()
     elf_sums = sorted(
         (

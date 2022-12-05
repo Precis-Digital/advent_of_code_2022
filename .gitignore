@@ -1,3 +1,7 @@
 **/credentials/*
 **/venv/*
 **/secrets/*
+.idea
+.DS_Store
+kaug/target
+kaug/Cargo.lock
