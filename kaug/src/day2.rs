@@ -1,6 +1,6 @@
 use std::fs;
 
-fn question_one(games: &Vec<&str>) -> i32 {
+fn question_one(games: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
 	for game in games {
 		sum += match game.to_owned() {
@@ -16,10 +16,10 @@ fn question_one(games: &Vec<&str>) -> i32 {
 			_ => 0
 		};
 	}
-	return sum;
+	return sum.to_string();
 }
 
-fn question_two(games: &Vec<&str>) -> i32 {
+fn question_two(games: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
 	for game in games {
 		sum += match game.to_owned() {
@@ -35,10 +35,10 @@ fn question_two(games: &Vec<&str>) -> i32 {
 			_ => 0
 		};
 	}
-	return sum;
+	return sum.to_string();
 }
 
-pub fn main() -> (i32, i32) {
+pub fn main() -> (String, String) {
 	let input: String = fs::read_to_string("./input/day2.txt").unwrap();
 	let games: Vec<&str> = input.lines().collect();
 	(question_one(&games), question_two(&games))

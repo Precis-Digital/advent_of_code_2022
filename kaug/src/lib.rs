@@ -5,7 +5,7 @@ mod day4;
 
 pub struct Solution {
 	pub day: String,
-	pub answer: (i32, i32)
+	pub answer: (String, String)
 }
 
 impl Solution {
@@ -13,17 +13,14 @@ impl Solution {
 		if args.len() < 2 {
             return Err("not enough arguments");
         }
-
 		let day: String = args[1].clone();
-
-		let answer: (i32, i32) = match day.as_str() {
+		let answer: (String, String) = match day.as_str() {
 			"1" => day1::main(),
 			"2" => day2::main(),
 			"3" => day3::main(),
 			"4" => day4::main(),
 			_ => panic!("Invalid day")
 		};
-
 		Ok(Solution { day, answer })
 	}
 }
