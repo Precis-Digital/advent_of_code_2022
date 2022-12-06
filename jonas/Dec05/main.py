@@ -12,15 +12,8 @@ def get_stacks_and_strategies_from_file(file_name: str) -> tuple[list[str, list]
     stacks = {val: [boxes[int(val)-1] for boxes in boxes_array if boxes[int(val)-1] != " "] for val in raw_stacks[-1].strip().split(" ") if val != ""}
     return stacks, strategies
 
-
 def get_boxes_array_from_raw_row(row: str) -> list[str]:
-    cleaned_row = row.replace("\n", "")
-    stacks = []
-    for i, character in enumerate(cleaned_row):
-        if i % 4 == 1:
-            stacks.append(character)
-
-    return stacks
+    return [char for i, char in enumerate(row.replace("\n", "")) if i % 4 == 1]
 
 def get_move_string_actions(command: str) -> tuple[int, str, str]:
     command_split = command.split(" ")

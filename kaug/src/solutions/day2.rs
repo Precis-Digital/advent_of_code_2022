@@ -1,4 +1,6 @@
-use std::fs;
+use crate::{solution::Solution, input};
+
+pub struct Day1;
 
 fn question_one(games: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
