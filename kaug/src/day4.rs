@@ -18,17 +18,19 @@ fn overlaps(a: (i32, i32), b: (i32, i32)) -> bool {
 	(a.0 <= b.0 && b.0 <= a.1) || (b.0 <= a.0 && a.0 <= b.1)
 }
 
-fn question_one(pairs: Vec<((i32, i32), (i32, i32))>) -> i32 {
-	pairs.iter().filter(|&pair| fully_contains(pair.0, pair.1)).count() as i32
+fn question_one(pairs: &Vec<((i32, i32), (i32, i32))>) -> String {
+	let ans: i32 = pairs.iter().filter(|&pair| fully_contains(pair.0, pair.1)).count() as i32;
+	ans.to_string()
 }
 
-fn question_two(pairs: Vec<((i32, i32), (i32, i32))>) -> i32 {
-	pairs.iter().filter(|&pair| overlaps(pair.0, pair.1)).count() as i32
+fn question_two(pairs: &Vec<((i32, i32), (i32, i32))>) -> String {
+	let ans: i32 = pairs.iter().filter(|&pair| overlaps(pair.0, pair.1)).count() as i32;
+	ans.to_string()
 }
 
-pub fn main() -> (i32, i32) {
+pub fn main() -> (String, String) {
 	let input: String = fs::read_to_string("./input/day4.txt").unwrap();
 	let lines: Vec<&str> = input.lines().collect();
 	let pairs: Vec<((i32, i32), (i32, i32))> = lines.iter().map(|line| parse_pair(line)).collect();
-	(question_one(pairs.clone()), question_two(pairs))
+	(question_one(&pairs), question_two(&pairs))
 }

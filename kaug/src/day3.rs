@@ -1,7 +1,7 @@
 use std::fs;
 use std::str::{self, Chars};
 
-fn question_one(rucksacks: &Vec<&str>) -> i32 {
+fn question_one(rucksacks: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks {
 		let (a, b) = rucksack.split_at(rucksack.len() / 2);
@@ -10,10 +10,10 @@ fn question_one(rucksacks: &Vec<&str>) -> i32 {
 		let char: char = common_item.unwrap();
 		sum += score(char)
 	}
-	return sum;
+	sum.to_string()
 }
 
-fn question_two(rucksacks: &Vec<&str>) -> i32 {
+fn question_two(rucksacks: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks.chunks(3) {
 		for c in rucksack[0].chars() {
@@ -23,7 +23,7 @@ fn question_two(rucksacks: &Vec<&str>) -> i32 {
 			}
 		}
 	}
-	return sum;
+	sum.to_string()
 }
 
 fn score(item: char) -> i32 {
@@ -34,7 +34,7 @@ fn score(item: char) -> i32 {
 	}
 }
 
-pub fn main() -> (i32, i32) {		
+pub fn main() -> (String, String) {		
 	let input: String = fs::read_to_string("./input/day3.txt").unwrap();
 	let rucksacks: Vec<&str> = input.lines().collect();
 	(question_one(&rucksacks), question_two(&rucksacks))

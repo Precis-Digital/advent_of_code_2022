@@ -13,10 +13,7 @@ def pad_list(lst: list[str], n: int) -> list[str]:
 
 def get_crate_array(line: str) -> list[str]:
     """get the crates from a line"""
-    return [
-        line[i : i + COLUMN_WIDTH].strip().strip("[]")
-        for i in range(0, len(line), COLUMN_WIDTH)
-    ]
+    return [m[1] for m in re.findall(r"(\[([A-Z])\]\s)|((\s){3}\s)", line)]
 
 
 def extract_stacks(lines: list[str]) -> defaultdict[list]:
@@ -54,26 +51,28 @@ def get_data(file_name: str) -> (defaultdict[list], list[list[int, int, int]]):
 
 
 def solution(
-    stacks: defaultdict[list], moves: list[list[int, int, int]], reverse_order=True
+    stacks: defaultdict[list],
+    moves: list[list[int, int, int]],
+    reverse_order_when_moving=True,
 ) -> str:
     # done so it doesnt mutate the original
     stacks = copy.deepcopy(stacks)
-    step = -1 if reverse_order else 1
+    step = -1 if reverse_order_when_moving else 1
     for qty, from_stack, to_stack in moves:
-        print(qty, from_stack, to_stack, stacks[from_stack][-qty:])
+        # print(qty, from_stack, to_stack, stacks[from_stack][-qty:])
         stacks[to_stack].extend(stacks[from_stack][-qty:][::step])
         stacks[from_stack] = stacks[from_stack][:-qty]
-    print(stacks)
+    # print(stacks)
     return "".join(stacks[k][-1] for k in sorted(stacks.keys()))
 
 
 if __name__ == "__main__":
-    stacks, moves = get_data(file_name="inputs/day-5-sample.txt")
+    stacks, moves = get_data(file_name="inputs/day-5-input.txt")
     print(
         "solution 1:",
-        solution(stacks=stacks, moves=moves, reverse_order=True),
+        solution(stacks=stacks, moves=moves, reverse_order_when_moving=True),
     )
     print(
         "solution 2:",
-        solution(stacks=stacks, moves=moves, reverse_order=False),
+        solution(stacks=stacks, moves=moves, reverse_order_when_moving=False),
     )
