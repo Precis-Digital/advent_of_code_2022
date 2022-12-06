@@ -1,12 +1,48 @@
-use std::fs;
 use regex::Regex;
 
-struct Stack {
+use crate::{input, solution::Solution};
+
+struct Input {
 	crates: Vec<Vec<char>>,
 	moves: Vec<(usize, usize, usize)>
 }
 
-fn parse_input(input: &str) -> Result<Stack, std::num::ParseIntError> {
+pub struct Day5;
+
+impl Solution for Day5 {
+	fn name(&self) -> &'static str {
+		"Day 5"
+	}
+
+	fn part_1(&self) -> String {
+		let file_input = input::load(5);
+		let input = parse_input(&file_input);
+		let mut crates: Vec<Vec<char>> = input.crates.clone();
+		let moves: Vec<(usize, usize, usize)> = input.moves.clone();
+		for(m, f, t) in moves {
+			for _ in 0..m {
+				let top: char = crates[f - 1].pop().unwrap();
+				crates[t - 1].push(top)
+			}
+		}
+		crates.iter().map(|c| c.last().copied().unwrap()).collect()
+	}
+
+	fn part_2(&self) -> String {
+		let file_input = input::load(5);
+		let input = parse_input(&file_input);
+		let mut crates: Vec<Vec<char>> = input.crates.clone();
+		let moves: Vec<(usize, usize, usize)> = input.moves.clone();
+		for(m, f, t) in moves {
+			let split: usize = crates[f - 1].len() - m;
+			let mut top: Vec<char> = crates[f - 1].split_off(split);
+			crates[t - 1].append(&mut top);
+		}
+		crates.iter().map(|c| c.last().copied().unwrap()).collect()
+	}
+}
+
+fn parse_input(input: &str) -> Input {
 	let (a, b) = input.split_once("\n\n").unwrap();
 	let mut crate_input = a.lines().collect::<Vec<_>>();
 	crate_input.pop();
@@ -28,35 +64,6 @@ fn parse_input(input: &str) -> Result<Stack, std::num::ParseIntError> {
 			let m = re.captures(l).unwrap();
 			Ok((m[1].parse()?, m[2].parse()?, m[3].parse()?))
 		})
-		.collect::<Result<_, std::num::ParseIntError>>()?;
-	Ok(Stack { crates, moves })
-}
-
-fn question_one(stack: &Stack) -> String {
-	let mut crates: Vec<Vec<char>> = stack.crates.clone();
-	let moves: Vec<(usize, usize, usize)> = stack.moves.clone();
-	for(m, f, t) in moves {
-		for _ in 0..m {
-			let top: char = crates[f - 1].pop().unwrap();
-			crates[t - 1].push(top)
-		}
-	}
-	crates.iter().map(|c| c.last().copied().unwrap()).collect()
-}
-
-fn question_two(stack: &Stack) -> String {
-	let mut crates: Vec<Vec<char>> = stack.crates.clone();
-	let moves: Vec<(usize, usize, usize)> = stack.moves.clone();
-	for(m, f, t) in moves {
-		let split: usize = crates[f - 1].len() - m;
-		let mut top: Vec<char> = crates[f - 1].split_off(split);
-		crates[t - 1].append(&mut top);
-	}
-	crates.iter().map(|c| c.last().copied().unwrap()).collect()
-}
-
-pub fn main() -> (String, String) {
-	let input: String = fs::read_to_string("./input/day5.txt").unwrap();
-	let stack: Stack = parse_input(&input).unwrap();
-	(question_one(&stack), question_two(&stack))
+		.collect::<Result<_, std::num::ParseIntError>>().unwrap();
+	Input { crates, moves }
 }
