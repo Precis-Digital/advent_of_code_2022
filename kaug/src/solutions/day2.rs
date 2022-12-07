@@ -60,3 +60,20 @@ fn map_2(games: &Vec<&str>) -> String {
 	}
 	return sum.to_string();
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+	const SAMPLE: &str = "A Y\nB X\nC Z";
+
+	#[test]
+	fn part_1() {
+		assert_eq!(parser(&SAMPLE, map_1), "15");
+	}
+
+	#[test]
+	fn part_2() {
+		assert_eq!(parser(&SAMPLE, map_2), "12");
+	}
+}

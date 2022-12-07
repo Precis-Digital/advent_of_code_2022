@@ -16,30 +16,41 @@ impl Solution for Day5 {
 
 	fn part_1(&self) -> String {
 		let file_input = input::load(5);
-		let input = parse_input(&file_input);
-		let mut crates: Vec<Vec<char>> = input.crates.clone();
-		let moves: Vec<(usize, usize, usize)> = input.moves.clone();
-		for(m, f, t) in moves {
-			for _ in 0..m {
-				let top: char = crates[f - 1].pop().unwrap();
-				crates[t - 1].push(top)
-			}
-		}
-		crates.iter().map(|c| c.last().copied().unwrap()).collect()
+		parser(&file_input, crate_mover_9000)
 	}
 
 	fn part_2(&self) -> String {
 		let file_input = input::load(5);
-		let input = parse_input(&file_input);
-		let mut crates: Vec<Vec<char>> = input.crates.clone();
-		let moves: Vec<(usize, usize, usize)> = input.moves.clone();
-		for(m, f, t) in moves {
-			let split: usize = crates[f - 1].len() - m;
-			let mut top: Vec<char> = crates[f - 1].split_off(split);
-			crates[t - 1].append(&mut top);
-		}
-		crates.iter().map(|c| c.last().copied().unwrap()).collect()
+		parser(&file_input, crate_mover_9001)
 	}
+}
+
+fn parser(file_input: &str, f: fn(&Input) -> String) -> String {
+	let input = parse_input(&file_input);
+	f(&input)
+}
+
+fn crate_mover_9000(input: &Input) -> String {
+	let mut crates = input.crates.clone();
+	let moves = input.moves.clone();
+	for(m, f, t) in moves {
+		for _ in 0..m {
+			let top: char = crates[f - 1].pop().unwrap();
+			crates[t - 1].push(top)
+		}
+	}
+	crates.iter().map(|c| c.last().copied().unwrap()).collect()
+}
+
+fn crate_mover_9001(input: &Input) -> String {
+	let mut crates = input.crates.clone();
+	let moves = input.moves.clone();
+	for(m, f, t) in moves {
+		let split: usize = crates[f - 1].len() - m;
+		let mut top: Vec<char> = crates[f - 1].split_off(split);
+		crates[t - 1].append(&mut top);
+	}
+	crates.iter().map(|c| c.last().copied().unwrap()).collect()
 }
 
 fn parse_input(input: &str) -> Input {
@@ -66,4 +77,29 @@ fn parse_input(input: &str) -> Input {
 		})
 		.collect::<Result<_, std::num::ParseIntError>>().unwrap();
 	Input { crates, moves }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+	const SAMPLE: &str = "    [D]    
+[N] [C]    
+[Z] [M] [P]
+1   2   3 
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2";
+
+	#[test]
+	fn part_1() {
+		assert_eq!(parser(&SAMPLE, crate_mover_9000), "CMZ");
+	}
+
+	#[test]
+	fn part_2() {
+		assert_eq!(parser(&SAMPLE, crate_mover_9001), "MCD");
+	}
 }
