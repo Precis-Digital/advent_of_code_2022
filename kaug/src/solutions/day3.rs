@@ -1,7 +1,27 @@
-use std::fs;
-use std::str::{self, Chars};
+use std::str::Chars;
 
-fn question_one(rucksacks: &Vec<&str>) -> String {
+use crate::{solution::Solution, input};
+
+pub struct Day3;
+
+impl Solution for Day3 {
+	fn name(&self) -> &'static str {
+		"Day 3"
+	}
+
+	fn part_1(&self) -> String {
+		let input = input::load(3);
+		parser_1(&input)
+	}
+
+	fn part_2(&self) -> String {
+		let input = input::load(3);
+		parser_2(&input)
+	}
+}
+
+fn parser_1(input: &str) -> String {
+	let rucksacks: Vec<&str>  = input.split("\n").collect();
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks {
 		let (a, b) = rucksack.split_at(rucksack.len() / 2);
@@ -13,7 +33,8 @@ fn question_one(rucksacks: &Vec<&str>) -> String {
 	sum.to_string()
 }
 
-fn question_two(rucksacks: &Vec<&str>) -> String {
+fn parser_2(input: &str) -> String {
+	let rucksacks: Vec<&str> = input.split("\n").collect();
 	let mut sum: i32 = 0;
 	for rucksack in rucksacks.chunks(3) {
 		for c in rucksack[0].chars() {
@@ -34,8 +55,24 @@ fn score(item: char) -> i32 {
 	}
 }
 
-pub fn main() -> (String, String) {		
-	let input: String = fs::read_to_string("./input/day3.txt").unwrap();
-	let rucksacks: Vec<&str> = input.lines().collect();
-	(question_one(&rucksacks), question_two(&rucksacks))
+#[cfg(test)]
+mod test {
+    use super::*;
+
+	const SAMPLE: &str = "vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw";
+
+	#[test]
+	fn part_1() {
+		assert_eq!(parser_1(&SAMPLE), "157");
+	}
+
+	#[test]
+	fn part_2() {
+		assert_eq!(parser_2(&SAMPLE), "70");
+	}
 }

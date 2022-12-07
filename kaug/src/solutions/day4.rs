@@ -1,36 +1,57 @@
-use std::fs;
+use sscanf::sscanf;
+use crate::{solution::Solution, input};
 
-fn parse_pair(line: &str) -> ((i32, i32), (i32, i32)) {
-	let assignments: Vec<&str> = line.split(",").collect();
-	(parse_range(assignments[0]), parse_range(assignments[1]))
+pub struct Day4;
+
+impl Solution for Day4 {
+	fn name(&self) -> &'static str {
+		"Day 4"
+	}
+
+	fn part_1(&self) -> String {
+		let input = input::load(4);
+		parser(&input, overlaps)
+	}
+
+	fn part_2(&self) -> String {
+		let input = input::load(4);
+		parser(&input, contains)
+	}
 }
 
-fn parse_range(assignment: &str) -> (i32, i32) {
-	let range: Vec<&str> = assignment.split("-").collect();
-	(range[0].parse::<i32>().unwrap(), range[1].parse::<i32>().unwrap())
+fn parser(input: &str, asserter : fn(i32, i32, i32, i32) -> bool) -> String {
+	let lines: Vec<&str> = input.split("\n").collect();
+	let mut count = 0;
+	for line in lines {
+		let (a, b, c, d) = sscanf!(line, "{i32}-{i32},{i32}-{i32}").unwrap();
+		if asserter(a, b, c, d) {
+			count += 1;
+		}
+	}
+	count.to_string()
 }
 
-fn fully_contains(a: (i32, i32), b: (i32, i32)) -> bool {
-	(a.0 <= b.0 && a.1  >= b.1) || (b.0 <= a.0 && b.1 >= a.1)
+fn overlaps(a:i32, b: i32, c: i32, d: i32) -> bool {
+	(a <= c && b >= d) || (c <= a && d >= b)
 }
 
-fn overlaps(a: (i32, i32), b: (i32, i32)) -> bool {
-	(a.0 <= b.0 && b.0 <= a.1) || (b.0 <= a.0 && a.0 <= b.1)
+fn contains(a:i32, b: i32, c: i32, d: i32) -> bool {
+	!(b < c || d < a)
 }
 
-fn question_one(pairs: &Vec<((i32, i32), (i32, i32))>) -> String {
-	let ans: i32 = pairs.iter().filter(|&pair| fully_contains(pair.0, pair.1)).count() as i32;
-	ans.to_string()
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-fn question_two(pairs: &Vec<((i32, i32), (i32, i32))>) -> String {
-	let ans: i32 = pairs.iter().filter(|&pair| overlaps(pair.0, pair.1)).count() as i32;
-	ans.to_string()
-}
+	const SAMPLE: &str = "2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8";
 
-pub fn main() -> (String, String) {
-	let input: String = fs::read_to_string("./input/day4.txt").unwrap();
-	let lines: Vec<&str> = input.lines().collect();
-	let pairs: Vec<((i32, i32), (i32, i32))> = lines.iter().map(|line| parse_pair(line)).collect();
-	(question_one(&pairs), question_two(&pairs))
+	#[test]
+	fn part_1() {
+		assert_eq!(parser(&SAMPLE, overlaps), "2");
+	}
+
+	#[test]
+	fn part_2() {
+		assert_eq!(parser(&SAMPLE, contains), "4");
+	}
 }

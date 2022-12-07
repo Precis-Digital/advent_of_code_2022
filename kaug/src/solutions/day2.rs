@@ -1,8 +1,29 @@
 use crate::{solution::Solution, input};
 
-pub struct Day1;
+pub struct Day2;
 
-fn question_one(games: &Vec<&str>) -> String {
+impl Solution for Day2 {
+	fn name(&self) -> &'static str {
+		"Day 2"
+	}
+
+	fn part_1(&self) -> String {
+		let input = input::load(2);
+		parser(&input, map_1)
+	}
+
+	fn part_2(&self) -> String {
+		let input = input::load(2);
+		parser(&input, map_2)
+	}
+}
+
+pub fn parser(input: &str, f: fn(&Vec<&str>) -> String) -> String {
+	let games: Vec<&str> = input.split("\n").collect();
+	f(&games)
+}
+
+fn map_1(games: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
 	for game in games {
 		sum += match game.to_owned() {
@@ -21,7 +42,7 @@ fn question_one(games: &Vec<&str>) -> String {
 	return sum.to_string();
 }
 
-fn question_two(games: &Vec<&str>) -> String {
+fn map_2(games: &Vec<&str>) -> String {
 	let mut sum: i32 = 0;
 	for game in games {
 		sum += match game.to_owned() {
@@ -40,8 +61,19 @@ fn question_two(games: &Vec<&str>) -> String {
 	return sum.to_string();
 }
 
-pub fn main() -> (String, String) {
-	let input: String = fs::read_to_string("./input/day2.txt").unwrap();
-	let games: Vec<&str> = input.lines().collect();
-	(question_one(&games), question_two(&games))
+#[cfg(test)]
+mod test {
+    use super::*;
+
+	const SAMPLE: &str = "A Y\nB X\nC Z";
+
+	#[test]
+	fn part_1() {
+		assert_eq!(parser(&SAMPLE, map_1), "15");
+	}
+
+	#[test]
+	fn part_2() {
+		assert_eq!(parser(&SAMPLE, map_2), "12");
+	}
 }
