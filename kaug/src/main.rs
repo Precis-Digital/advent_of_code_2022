@@ -1,11 +1,27 @@
-use std::env;
-use kaug::Solution;
+use clap::Parser;
+
+use crate::timer::Timer;
+
+mod solutions;
+mod solution;
+mod input;
+mod timer;
+
+/// Runs the solution for the 2022 Advent of Code
+#[derive(Parser)]
+struct Cli {
+    /// the day to run
+    day: String
+}
 
 
 fn main() {
-	let args: Vec<String> = env::args().collect();
+	let args: Cli = Cli::parse();
 
-	let s: Solution = Solution::build(&args).unwrap();
+	let _timer = Timer::new();
+	let solution = solutions::get(&args.day);
 
-	println!("Day {} | Question 1: {} | Question 2: {}", s.day, s.answer.0, s.answer.1)
+	println!("----- 2022 {} -----", solution.name());
+	println!("part_1: {}", solution.part_1());
+	println!("part_2: {}", solution.part_2());
 }
