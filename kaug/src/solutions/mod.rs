@@ -6,6 +6,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 
 pub fn get(day: &str) -> &dyn Solution {
@@ -16,6 +17,7 @@ pub fn get(day: &str) -> &dyn Solution {
       "day4" => &day4::Day4,
       "day5" => &day5::Day5,
       "day6" => &day6::Day6,
+      "day7" => &day7::Day7,
       _=> panic!("Invalid day")
   }
 }
