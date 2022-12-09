@@ -33,9 +33,9 @@ fn parser(input: &str, s: fn(Vec<i32>) -> String) -> String {
 			}
 		}
 		if !line.starts_with("$") && !line.starts_with("dir") {
-			let size = line.split(" ").nth(0).map(|s| s.parse::<i32>().unwrap()).unwrap();
-			for i in &mut dir {
-				*i += size
+			let size = line.split(" ").nth(0).unwrap().parse::<i32>().unwrap();
+			for dir_size in &mut dir {
+				*dir_size += size
 			}
 		}
 	}
