@@ -1,3 +1,6 @@
+import copy
+
+
 def get_data(fname):
     grid_dict = {}
     R, C = 0, 0
@@ -29,7 +32,9 @@ DIRECTIONS = {
 }
 
 
-def get_max_direction(grid_dict, r, c, max_r, max_c, direction):
+def get_max_direction(
+    grid_dict, r, c, max_r, max_c, direction, max_value=None, solution=2
+):
     global COUNTER, COUNTER_CACHE_MISS
     COUNTER += 1
     cell_max = grid_dict[(r, c)][direction]
@@ -58,15 +63,39 @@ def get_max_direction(grid_dict, r, c, max_r, max_c, direction):
         direction_r, direction_c = DIRECTIONS[direction]
         new_r = r + direction_r
         new_c = c + direction_c
-        md = get_max_direction(grid_dict, new_r, new_c, max_r, max_c, direction)
+        # md =
 
         # if the cell values are equal then should pick the nearest one
-        if md[0] == grid_dict[(new_r, new_c)]["value"]:
-            grid_dict[(r, c)][direction] = md
-        else:
+        # solves solution 1
+        if solution == 1:
             grid_dict[(r, c)][direction] = max(
-                (grid_dict[(new_r, new_c)]["value"], new_r, new_c), md
+                (grid_dict[(new_r, new_c)]["value"], new_r, new_c),
+                get_max_direction(
+                    grid_dict, new_r, new_c, max_r, max_c, direction, solution=1
+                ),
             )
+            return grid_dict[(r, c)][direction]
+
+        elif solution == 2:
+            if grid_dict[(new_r, new_c)]["value"] >= max_value:
+                # print(grid_dict[(new_r, new_c)], grid_dict[(r, c)]["value"])
+                return (
+                    grid_dict[(new_r, new_c)]["value"],
+                    new_r,
+                    new_c,
+                )
+            else:
+                return get_max_direction(
+                    grid_dict,
+                    new_r,
+                    new_c,
+                    max_r,
+                    max_c,
+                    direction,
+                    max_value=max_value,
+                    solution=2,
+                )
+
         return grid_dict[(r, c)][direction]
     return cell_max
 
@@ -83,13 +112,13 @@ def solution1(grid_dict, R, C):
             v = grid_dict[(r, c)]["value"]
             if r == 0 or r == R or c == 0 or c == C:
                 counter += 1
-            elif v > get_max_direction(grid_dict, r, c, R, C, "left")[0]:
+            elif v > get_max_direction(grid_dict, r, c, R, C, "left", solution=1)[0]:
                 counter += 1
-            elif v > get_max_direction(grid_dict, r, c, R, C, "right")[0]:
+            elif v > get_max_direction(grid_dict, r, c, R, C, "right", solution=1)[0]:
                 counter += 1
-            elif v > get_max_direction(grid_dict, r, c, R, C, "top")[0]:
+            elif v > get_max_direction(grid_dict, r, c, R, C, "top", solution=1)[0]:
                 counter += 1
-            elif v > get_max_direction(grid_dict, r, c, R, C, "down")[0]:
+            elif v > get_max_direction(grid_dict, r, c, R, C, "down", solution=1)[0]:
                 counter += 1
 
     print(counter, time.time() - t)
@@ -98,27 +127,33 @@ def solution1(grid_dict, R, C):
 def solution2(grid_dict, R, C):
     counter = 0
     t = time.time()
+    score = 0
     for r in range(R + 1):
         for c in range(C + 1):
+            if r == 0 or r == R or c == 0 or c == C:
+                continue
             v = grid_dict[(r, c)]["value"]
-            mdl = get_max_direction(grid_dict, r, c, R, C, "left")
-            mdr = get_max_direction(grid_dict, r, c, R, C, "right")
-            mdt = get_max_direction(grid_dict, r, c, R, C, "top")
-            mdd = get_max_direction(grid_dict, r, c, R, C, "down")
-            print(
-                r,
-                c,
-                mdl,
-                mdr,
-                mdt,
-                mdd,
+            mdl = get_max_direction(
+                grid_dict, r, c, R, C, "left", max_value=v, solution=2
+            )
+            mdr = get_max_direction(
+                grid_dict, r, c, R, C, "right", max_value=v, solution=2
+            )
+            mdt = get_max_direction(
+                grid_dict, r, c, R, C, "top", max_value=v, solution=2
+            )
+            mdd = get_max_direction(
+                grid_dict, r, c, R, C, "down", max_value=v, solution=2
+            )
+            new_score = (
                 compute_distance(r, c, mdl[1], mdl[2])
                 * compute_distance(r, c, mdr[1], mdr[2])
                 * compute_distance(r, c, mdt[1], mdt[2])
-                * compute_distance(r, c, mdd[1], mdd[2]),
+                * compute_distance(r, c, mdd[1], mdd[2])
             )
-
-    print(counter, time.time() - t)
+            # print(r, c, mdl, mdr, mdt, mdd, new_score)
+            score = max(score, new_score)
+    return score
 
 
 if __name__ == "__main__":
@@ -129,6 +164,14 @@ if __name__ == "__main__":
     print("time to load data", time.time() - start)
     print(R, C)
 
-    solution1(grid_dict, R, C)
-    print(COUNTER, COUNTER_CACHE_MISS)
-    # solution2(grid_dict, R, C)
+    grid_dict_copy = copy.deepcopy(grid_dict)
+    print(solution1(grid_dict_copy, R, C))
+    # print(COUNTER, COUNTER_CACHE_MISS)
+    grid_dict_copy = copy.deepcopy(grid_dict)
+    print(solution2(grid_dict_copy, R, C))
+
+    # print(
+    #     get_max_direction(
+    #         grid_dict, 2, 1, R, C, "right", max_value=grid_dict[(2, 1)]["value"]
+    #     )
+    # )
