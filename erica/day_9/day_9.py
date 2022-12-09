@@ -31,9 +31,6 @@ def generate_head_coordinates(instructions: list[str]) -> list[tuple[int, int]]:
 
 
 def generate_tail_coordinates(head_coord: list[tuple[int, int]], step=0) -> list[tuple[int, int]]:
-    """Tail coordinates follow the head coordinates, and will be in a coordinate
-     touching the head coordinate even diagonally."""
-    tail_coordinates = [(1, 1)]
     for i, head in enumerate(head_coord):
         last_position = tail_coordinates[-1]
         if i <= step:
