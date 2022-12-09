@@ -58,15 +58,15 @@ fn solution_2(trees: Vec<Vec<i32>>) -> String {
 	high_score.to_string()
 }
 
-fn parse_score((local_best, hieght): &mut (i32, i32), iter: impl Iterator<Item = i32>) {
+fn parse_score((tree_score, height): &mut (i32, i32), iter: impl Iterator<Item = i32>) {
 	let mut score = 0;
 	for i in iter {
 		score += 1;
-		if i >= *hieght {
+		if i >= *height {
 			break;
 		}
 	}
-	*local_best *= score;
+	*tree_score *= score;
 }
 
 #[cfg(test)]
