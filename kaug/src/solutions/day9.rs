@@ -1,5 +1,4 @@
 use std::{collections::HashSet, ops::{AddAssign, Sub}};
-
 use crate::{solution::Solution, input};
 
 pub struct Day9;
@@ -24,7 +23,6 @@ fn parser(input: &str, n: usize) -> String {
 	let movements = input.lines().map(Pos::parse_input).collect::<Vec<(Pos, i32)>>();
 	let mut tail_map = HashSet::new();
 	let mut knots = vec![Pos::init(0, 0); n];
-
 	tail_map.insert(*knots.last().unwrap());
 	for (dir, count) in movements {
 		for _ in 0..count {
@@ -72,25 +70,28 @@ impl Pos {
 	fn init(x: i32, y: i32) -> Self {
 		Self { x, y }
 	}
+
 	fn signum(&self) -> Self {
 		Self { 
 			x: self.x.signum(),
 			y: self.y.signum()
 		}
 	}
+
 	fn abs(&self) -> Self {
 		Self { 
 			x: self.x.abs(),
 			y: self.y.abs() 
 		}
 	}
+
 	fn max(&self) -> i32 {
 		self.x.max(self.y)
 	}
+
 	fn parse_input(imp: &str) -> (Self, i32) {
 		let (dir, count) = imp.split_once(" ").unwrap();
 		let count = count.parse::<i32>().unwrap();
-
 		let pos = match dir {
 			"R" => Self::init(1, 0),
 			"D" => Self::init(0, 1),
@@ -98,7 +99,6 @@ impl Pos {
 			"U" => Self::init(0, -1),
 			_ => panic!("Movement parsing error")
 		};
-
 		(pos, count)
 	}
 }
