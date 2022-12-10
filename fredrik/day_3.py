@@ -13,11 +13,6 @@ PRIORITY = {
 }
 
 
-def chunks(lst: list[T], n: int) -> list[T]:
-    for i in range(0, len(lst), n):
-        yield lst[i : i + n]
-
-
 def find_common_type(*args: str) -> str:
     (common_type,) = set.intersection(*map(set, args))
     return common_type
@@ -38,7 +33,7 @@ def main() -> None:
         priority_sum_1 += PRIORITY[common_type]
 
     priority_sum_2 = 0
-    for elf_group in chunks(lst=rucksacks, n=3):
+    for elf_group in utils.chunks(lst=rucksacks, n=3):
         common_type = find_common_type(*elf_group)
         priority_sum_2 += PRIORITY[common_type]
 
