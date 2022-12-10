@@ -25,20 +25,20 @@ fn parser(input: &str, n: usize) -> String {
 	let mut tail_map = HashSet::new();
 	let mut knots = vec![Pos::init(0, 0); n];
 
-    tail_map.insert(*knots.last().unwrap());
-    for (dir, count) in movements {
-        for _ in 0..count {
-            knots[0] += dir;
-            for i in 1..knots.len() {
-                let diff = knots[i - 1] - knots[i];
-                if diff.abs().max() <= 1 {
-                    continue;
-                }
-                knots[i] += diff.signum();
-            }
-            tail_map.insert(*knots.last().unwrap());
-        }
-    }
+	tail_map.insert(*knots.last().unwrap());
+	for (dir, count) in movements {
+		for _ in 0..count {
+			knots[0] += dir;
+			for i in 1..knots.len() {
+				let diff = knots[i - 1] - knots[i];
+				if diff.abs().max() <= 1 {
+					continue;
+				}
+				knots[i] += diff.signum();
+			}
+			tail_map.insert(*knots.last().unwrap());
+		}
+	}
 	tail_map.len().to_string()
 }
 
