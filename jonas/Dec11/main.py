@@ -93,15 +93,16 @@ def get_monkeys(file_name: str) -> list[Monkey]:
 
 def play_monkey_game(monkeys: list[Monkey], rounds: int, worry_level_divisor: int):
     # Calculate the Least Common Multiple of the divisibles in the monkeys
-    lcmNum = 1
+    # https://en.wikipedia.org/wiki/Chinese_remainder_theorem
+    lcm_num = 1
     for monkey in monkeys:
-        lcmNum = lcm(lcmNum, monkey.divisible_by)
+        lcm_num = lcm(lcm_num, monkey.divisible_by)
 
     monkey_map = {monkey.num: monkey for monkey in monkeys}
     for _ in range(1, rounds+1):
         for monkey in monkeys:
             for item in monkey.items:
-                target_monkey, new_value = monkey.get_target_monkey_and_new_value(item, worry_level_divisor, lcmNum)
+                target_monkey, new_value = monkey.get_target_monkey_and_new_value(item, worry_level_divisor, lcm_num)
                 monkey_map[target_monkey].items.append(new_value)
             monkey.items=[]
 
