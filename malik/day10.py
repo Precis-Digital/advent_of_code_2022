@@ -47,7 +47,7 @@ def solution2(program: list[tuple[str, int]]):
     crt_pointer = 0
     while program:
         instruction, value = program.pop(0)
-        print(instruction, value)
+        # print(instruction, value)
         ts = 2 if instruction == "addx" else 1
 
         for _ in range(ts):
@@ -70,7 +70,8 @@ if __name__ == "__main__":
     po = run_program(program=program)
     assert solution1(program_output=po) == 13140
     solution2(program=program)
-
+    print()
+    print() 
     ########################################
 
     program = get_program("inputs/day-10-input.txt")
