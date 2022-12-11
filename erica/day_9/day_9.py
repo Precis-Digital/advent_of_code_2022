@@ -10,10 +10,10 @@ def get_data_into_lines() -> list[str]:
 
 
 def generate_head_coordinates(instructions: list[str]) -> list[tuple[int, int]]:
-    head_coordinates = [(1, 1)]
+    head_coordinates_ = [(1, 1)]
     for i, instruction in enumerate(instructions):
         step_coordinates = []
-        last_position = head_coordinates[-1]
+        last_position = head_coordinates_[-1]
         direction = instruction[0]
         steps = int(instruction[1:])
         for step in range(steps):
@@ -26,15 +26,15 @@ def generate_head_coordinates(instructions: list[str]) -> list[tuple[int, int]]:
             if direction == "D":
                 last_position = (last_position[0], last_position[1] - 1)
             step_coordinates.append(last_position)
-        head_coordinates.extend(step_coordinates)
-    return head_coordinates
+        head_coordinates_.extend(step_coordinates)
+    return head_coordinates_
 
 
-def generate_tail_coordinates(head_coord: list[tuple[int, int]], step=0) -> list[tuple[int, int]]:
-    tail_coordinates = [(1, 1)]
+def generate_tail_coordinates(head_coord: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    tail_coordinates_ = [(1, 1)]
     for i, head in enumerate(head_coord):
-        last_position = tail_coordinates[-1]
-        if i <= step:
+        last_position = tail_coordinates_[-1]
+        if i == 0:
             continue
 
         if math.hypot(head[0] - last_position[0], head[1] - last_position[1]) > MAX_DISTANCE:
@@ -46,8 +46,8 @@ def generate_tail_coordinates(head_coord: list[tuple[int, int]], step=0) -> list
                 last_position = (last_position[0], last_position[1] + 1)
             if head[1] < last_position[1]:
                 last_position = (last_position[0], last_position[1] - 1)
-        tail_coordinates.append(last_position)
-    return tail_coordinates
+        tail_coordinates_.append(last_position)
+    return tail_coordinates_
 
 
 if __name__ == "__main__":
@@ -58,6 +58,7 @@ if __name__ == "__main__":
     tail_coordinates = generate_tail_coordinates(head_coord=head_coordinates)
     print(f"part 1 {len(set(tail_coordinates))}")  # Part 1: 5907
 
-    for i in range(8):
+    tail_cords = []
+    for _ in range(8):
         tail_coordinates = generate_tail_coordinates(head_coord=tail_coordinates)
     print(f"part 2 {len(set(tail_coordinates))}")  # Part 2: 2303
