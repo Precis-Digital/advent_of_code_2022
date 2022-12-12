@@ -4,7 +4,7 @@ pub struct Day10;
 
 impl Solution for Day10 {
 	fn name(&self) -> &'static str {
-		"Day 9"
+		"Day 10"
 	}
 
 	fn part_1(&self) -> String {
