@@ -115,14 +115,14 @@ def visualise_output(rope_length: int, current_rope_positions: dict[int, tuple[i
 
 # Sample 1 - 13
 # Visualisation param = [6,5]
-print(len(determine_unique_positions_of_tail(get_moves("sample_input.txt"), rope_length=1).keys()))
+print(len(determine_unique_positions_of_tail(get_moves("sample_input.txt"), rope_length=1, visualise=[6,5]).keys()))
 
 # Part 1 - 6314
 print(len(determine_unique_positions_of_tail(get_moves("input.txt"), rope_length=1).keys()))
 
 # Sample 2 - 1
 # Visualisation param = [6, 5]
-print(len(determine_unique_positions_of_tail(get_moves("sample_input.txt"), rope_length=9).keys()))
+print(len(determine_unique_positions_of_tail(get_moves("sample_input.txt"), rope_length=9, visualise=[6,5]).keys()))
 
 # Sample 2 Large - 36
 print(len(determine_unique_positions_of_tail(get_moves("sample_input_large.txt"), rope_length=9).keys()))

@@ -90,13 +90,11 @@ def part_2_answer():
     return url
 
 def submit_answer(answer: str, level: str, day_num: str, year_num: str = "2022"):
-    url = f"{BASE_URL}{year_num}/day/{day_num}"
+    url = f"{BASE_URL}{year_num}/day/{day_num}/answer"
     res = requests.post(url=url, data={"level": level, "answer": answer}, headers={'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': "jonas@precisdigital.com"}, cookies={"session": get_session_cookie()})
 
-    rex = re.compile("<article[^>]*>(.*?)</article>", re.S|re.M)
-    regex_match = rex.match(res.text)
-    if regex_match:
-        return regex_match.groups()[0].strip()
+    if "That's the right answer!" in res.text:
+        return "That's the right answer!"
     
     if 'Both parts of this puzzle are complete' in res.text:
         return 'Both parts of this puzzle are already complete!'
@@ -153,9 +151,9 @@ def run_functions_prompt():
             time.sleep(1)
     
     day_num = folder_name.replace("Dec", "")
-    date_module = importlib.import_module(f"{folder_name}.main")
-
+    
     while True:
+        date_module = importlib.import_module(f"{folder_name}.main")
         clear_console_and_print(f"""
 You're working with '{folder_name}'🎄.
 What would you like to do next?🎅
