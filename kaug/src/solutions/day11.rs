@@ -1,4 +1,4 @@
-use std::{collections::BinaryHeap, iter};
+use std::collections::BinaryHeap;
 
 use crate::{solution::Solution, input};
 
@@ -19,31 +19,34 @@ impl Solution for Day11 {
 }
 
 fn solution(input: &str, rounds: usize, relief: u64) -> String {
-	iter::once(parser(input))
-		.map(|m| (m.iter().map(|m| m.divisible_by).product(), m))
-		.fold(0, |_, (modn, mut monkeys)| {
-			for _ in 0..rounds {
-				for m in 0..monkeys.len() {
-					monkeys[m].inspect(modn, relief)
-						.into_iter()
-						.for_each(|(t, w)| monkeys[t].items.push(w))
-				}
+	let mut monkeys  = parser(input);
+	let modn: u64 = monkeys.iter().map(|m| m.divisible_by).product();
+	
+	for _ in 0..rounds {
+		for m in 0..monkeys.len() {
+			let transfers = monkeys[m].inspect(modn, relief);
+			for (t, w) in transfers {
+				monkeys[t].items.push(w)
 			}
-			monkeys.iter()
-				.map(|m| m.inspected_items)
-				.collect::<BinaryHeap<_>>()
-				.into_sorted_vec()
-				.iter()
-				.rev()
-				.take(2)
-				.product()
-		}).to_string()
+		}
+	}
+
+	let sum: u64 = monkeys.iter()
+		.map(|m| m.inspected_items)
+		.collect::<BinaryHeap<_>>()
+		.into_sorted_vec()
+		.iter()
+		.rev()
+		.take(2)
+		.product();
+	
+	sum.to_string()
 }
 
 #[derive(Debug)]
 struct Monkey {
 	items: Vec<u64>,
-	inspected_items: usize,
+	inspected_items: u64,
 	operation: Operation,
 	divisible_by: u64,
 	yes: usize,
@@ -52,32 +55,38 @@ struct Monkey {
 
 impl Monkey {
 	fn inspect(&mut self, modn: u64, relief: u64) -> Vec<(usize, u64)> {
-		self.items.drain(..)
-			.inspect(|_| self.inspected_items += 1)
-			.map(|w| (self.operation.apply(w) % modn) / relief)
-			.map(|w| (match w % self.divisible_by == 0 {
+		let items: Vec<u64> = self.items.drain(..).collect();
+		let mut transfers = Vec::new();
+		for item in items {
+			self.inspected_items += 1;
+			let mut worry_level = self.operation.apply(item);
+			worry_level /= relief;
+			worry_level %= modn;
+			let target = match worry_level % self.divisible_by == 0 {
 				true => self.yes,
 				_ => self.no
-			}, w))
-			.collect()
+			};
+			transfers.push((target, worry_level))
+		}
+		transfers
 	}
 }
 
 #[derive(Debug)]
 enum Operation {
-    Add(u64),
-    Multiply(u64),
-    Square,
+	Add(u64),
+	Multiply(u64),
+	Square,
 }
 
 impl Operation {
-    fn apply(&self, b: u64) -> u64 {
-        match self {
-            Operation::Add(a) => a + b,
-            Operation::Multiply(a) => a * b,
-            Operation::Square => b * b,
-        }
-    }
+	fn apply(&self, b: u64) -> u64 {
+		match self {
+			Operation::Add(a) => a + b,
+			Operation::Multiply(a) => a * b,
+			Operation::Square => b * b,
+		}
+	}
 }
 
 fn parser(input: &str) -> Vec<Monkey> {
@@ -146,6 +155,6 @@ Test: divisible by 17
 
 	#[test]
 	fn part_2() {
-		assert_eq!(solution(&SAMPLE, 10000, 1), "36");
+		assert_eq!(solution(&SAMPLE, 10000, 1), "2713310158");
 	}
 }
