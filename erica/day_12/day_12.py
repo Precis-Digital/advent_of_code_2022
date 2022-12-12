@@ -63,8 +63,8 @@ if __name__ == '__main__':
 
     potential_starting_points = get_all_possible_starting_points(terrain=height_map)
     nr_steps = []
-    for point in potential_starting_points:
-        nr_s = get_shortest_path(point, end_pos, height_map)
+    for p in potential_starting_points:
+        nr_s = get_shortest_path(p, end_pos, height_map)
         if nr_s:
             nr_steps.append(nr_s)
     print(f"part 2: {min(nr_steps)}")  # part 2: 386
