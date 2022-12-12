@@ -19,28 +19,28 @@ impl Solution for Day11 {
 }
 
 fn solution(input: &str, rounds: usize, relief: u64) -> String {
-    let mut monkeys  = parser(input);
-    let modn: u64 = monkeys.iter().map(|m| m.divisible_by).product();
-    
-    for _ in 0..rounds {
-        for m in 0..monkeys.len() {
-            let transfers = monkeys[m].inspect(modn, relief);
-            for (t, w) in transfers {
-                monkeys[t].items.push(w)
-            }
-        }
-    }
+	let mut monkeys  = parser(input);
+	let modn: u64 = monkeys.iter().map(|m| m.divisible_by).product();
+	
+	for _ in 0..rounds {
+		for m in 0..monkeys.len() {
+			let transfers = monkeys[m].inspect(modn, relief);
+			for (t, w) in transfers {
+				monkeys[t].items.push(w)
+			}
+		}
+	}
 
-    let sum: u64 = monkeys.iter()
-        .map(|m| m.inspected_items)
-        .collect::<BinaryHeap<_>>()
-        .into_sorted_vec()
-        .iter()
-        .rev()
-        .take(2)
-        .product();
-    
-    sum.to_string()
+	let sum: u64 = monkeys.iter()
+		.map(|m| m.inspected_items)
+		.collect::<BinaryHeap<_>>()
+		.into_sorted_vec()
+		.iter()
+		.rev()
+		.take(2)
+		.product();
+	
+	sum.to_string()
 }
 
 #[derive(Debug)]
@@ -55,38 +55,38 @@ struct Monkey {
 
 impl Monkey {
 	fn inspect(&mut self, modn: u64, relief: u64) -> Vec<(usize, u64)> {
-        let items: Vec<u64> = self.items.drain(..).collect();
-        let mut transfers = Vec::new();
-        for item in items {
-            self.inspected_items += 1;
-            let mut worry_level = self.operation.apply(item);
-            worry_level /= relief;
-            worry_level %= modn;
-            let target = match worry_level % self.divisible_by == 0 {
-                true => self.yes,
-                _ => self.no
-            };
-            transfers.push((target, worry_level))
-        }
-        transfers
+		let items: Vec<u64> = self.items.drain(..).collect();
+		let mut transfers = Vec::new();
+		for item in items {
+			self.inspected_items += 1;
+			let mut worry_level = self.operation.apply(item);
+			worry_level /= relief;
+			worry_level %= modn;
+			let target = match worry_level % self.divisible_by == 0 {
+				true => self.yes,
+				_ => self.no
+			};
+			transfers.push((target, worry_level))
+		}
+		transfers
 	}
 }
 
 #[derive(Debug)]
 enum Operation {
-    Add(u64),
-    Multiply(u64),
-    Square,
+	Add(u64),
+	Multiply(u64),
+	Square,
 }
 
 impl Operation {
-    fn apply(&self, b: u64) -> u64 {
-        match self {
-            Operation::Add(a) => a + b,
-            Operation::Multiply(a) => a * b,
-            Operation::Square => b * b,
-        }
-    }
+	fn apply(&self, b: u64) -> u64 {
+		match self {
+			Operation::Add(a) => a + b,
+			Operation::Multiply(a) => a * b,
+			Operation::Square => b * b,
+		}
+	}
 }
 
 fn parser(input: &str) -> Vec<Monkey> {
