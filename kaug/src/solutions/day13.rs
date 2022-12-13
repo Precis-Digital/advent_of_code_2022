@@ -34,20 +34,21 @@ fn solution_1(input: &str) -> String {
 }
 
 fn solution_2(input: &str) -> String {
-    let mut packets: Vec<Value> = input.lines()
-        .filter(|l| l.len() > 0)
-        .map(|l| serde_json::from_str(l).unwrap())
-        .collect();
-    let divider1 = serde_json::to_value(vec![vec![2]]).unwrap();
-    let divider2 = serde_json::to_value(vec![vec![6]]).unwrap();
-    packets.push(divider1.clone());
-    packets.push(divider2.clone());
-
-    packets.sort_by(|v1, v2| compare_pair(v1, v2).unwrap());
-    let pos1 = packets.iter().position(|e|compare_pair(e, &divider1) == Some(Ordering::Equal)).unwrap();
-    let pos2 = packets.iter().position(|e|compare_pair(e, &divider2) == Some(Ordering::Equal)).unwrap();
-    
-	((pos1 + 1) * (pos2 + 1)).to_string()
+	let mut packets: Vec<Value> = input.lines()
+		.filter(|l| l.len() > 0)
+		.map(|l| serde_json::from_str(l).unwrap())
+		.collect();
+	
+	let divider_1 = serde_json::to_value(vec![vec![2]]).unwrap();
+	let divider_2 = serde_json::to_value(vec![vec![6]]).unwrap();
+	packets.push(divider_1.clone());
+	packets.push(divider_2.clone());
+	packets.sort_by(|p1, p2| compare_pair(p1, p2).unwrap())
+	
+	let pos_1 = packets.iter().position(|e|compare_pair(e, &divider_1) == Some(Ordering::Equal)).unwrap();
+	let pos_2 = packets.iter().position(|e|compare_pair(e, &divider_2) == Some(Ordering::Equal)).unwrap();
+	
+	((pos_1 + 1) * (pos_2 + 1)).to_string()
 }
 
 struct PacketsParser<'a> {
