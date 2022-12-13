@@ -135,6 +135,8 @@ def generate_new_day_prompt():
     while True:
         clear_console()
         resp = input("Input the day in numbers (fx. 8, 08, 10, 12): ")
+        if resp == "":
+            break
         try:
             url = generate_new_day(add_leading_zero(remove_leading_zero(resp)))
             print("Generated new day folder for you!")
