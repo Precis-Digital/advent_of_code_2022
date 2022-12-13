@@ -60,32 +60,45 @@ def generate_new_day(day_num: str, year_num: str = "2022"):
         f.write(f"""
 # Day {day_num}, Year {year_num}
 # Link: {url}
+import time
 def get_input_values(file_name: str) -> str:
     with open(file_name, 'r') as f:
         return f.readlines()
 
 def part_1_sample():
+    start_time = time.time()
     input_values = get_input_values('{folder_name}/sample_input.txt')
     print('You need to write this function yourself :)')
     print('Dont forget to copy paste the sample input into the sample_input.txt file.')
-    return len(input_values)
+    ans = len(input_values)
+    print(f'Ran in {{time.time() - start_time}} seconds')
+    return ans
 
 def part_1_answer():
+    start_time = time.time()
     input_values = get_input_values('{folder_name}/input.txt')
     print('You need to write this function yourself :)')
-    return len(input_values)
+    ans = len(input_values)
+    print(f'Ran in {{time.time() - start_time}} seconds')
+    return ans
 
 def part_2_sample():
+    start_time = time.time()
     input_values = get_input_values('{folder_name}/sample_input.txt')
     print('You need to write this function yourself :)')
     print('Dont forget to copy paste the sample input into the sample_input.txt file.')
-    return len(input_values)
+    ans = len(input_values)
+    print(f'Ran in {{time.time() - start_time}} seconds')
+    return ans
 
 def part_2_answer():
+    start_time = time.time()
     input_values = get_input_values('{folder_name}/input.txt')
     print('You need to write this function yourself :)')
-    return len(input_values)
-        """)
+    ans = len(input_values)
+    print(f'Ran in {{time.time() - start_time}} seconds')
+    return ans
+""")
     
     return url
 
@@ -95,6 +108,9 @@ def submit_answer(answer: str, level: str, day_num: str, year_num: str = "2022")
 
     if "That's the right answer!" in res.text:
         return "That's the right answer!"
+
+    if 'not the right answer' in res.text:
+        return "That's not the right answer!"
     
     if 'Both parts of this puzzle are complete' in res.text:
         return 'Both parts of this puzzle are already complete!'
