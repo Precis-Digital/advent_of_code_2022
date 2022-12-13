@@ -77,8 +77,6 @@ def find_shortest_path(height_map: HeightMap, start_coords: Optional[tuple[int, 
         # print(current_coords)
         if current_coords in end_coords_set:
             return distances[current_coords]
-        unvisited.remove(current_coords)
-        visited.add(current_coords)
 
         if reverse_search:
             neighbors = height_map.map[current_coords].reverse_get_neighbors(height_map)
@@ -93,6 +91,8 @@ def find_shortest_path(height_map: HeightMap, start_coords: Optional[tuple[int, 
             if new_distance < distances[neighbor.coordinates]:
                 distances[neighbor.coordinates] = new_distance
 
+        unvisited.remove(current_coords)
+        visited.add(current_coords)
 
 
 
