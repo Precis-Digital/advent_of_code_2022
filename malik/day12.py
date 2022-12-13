@@ -38,10 +38,6 @@ class HeightMap:
     def get_cell(self, coordinates: tuple[int, int]) -> Optional[Cell]:
         return self.map.get(coordinates)
 
-def compute_distance(from_coords: tuple[int, int], to_coords: tuple[int, int]) -> int:
-    x1, y1 = from_coords
-    x2, y2 = to_coords
-    return abs(x1 - x2) + abs(y1 - y2)
 
 def build_height_map(fname: str) -> HeightMap:
     with open(fname) as f:
