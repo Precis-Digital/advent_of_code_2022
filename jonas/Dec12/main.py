@@ -1,6 +1,9 @@
 
 # Day 12, Year 2022
 # Link: https://adventofcode.com/2022/day/12
+import time
+
+
 def get_input_values(file_name: str) -> str:
     starting_point = None
     finishing_point = None
@@ -55,12 +58,19 @@ def get_all_positions_with_elevation_a(graph):
     return all_positions
 
 def part_1_sample():
-    return walk_mountain(*get_input_values('Dec12/sample_input.txt'))
+    start_time = time.time()
+    ans = walk_mountain(*get_input_values('Dec12/sample_input.txt'))
+    print(f"Ran in {time.time() - start_time} seconds")
+    return ans
 
 def part_1_answer():
-    return walk_mountain(*get_input_values('Dec12/input.txt'))
+    start_time = time.time()
+    ans =  walk_mountain(*get_input_values('Dec12/input.txt'))
+    print(f"Ran in {time.time() - start_time} seconds")
+    return ans
 
 def part_2_sample():
+    start_time = time.time()
     graph, _, finishing_point = get_input_values('Dec12/sample_input.txt')
 
     shortest_path = 1e9
@@ -69,9 +79,12 @@ def part_2_sample():
         if path_length < shortest_path:
             shortest_path = path_length
     
-    return shortest_path
+    ans = shortest_path
+    print(f"Ran in {time.time() - start_time} seconds")
+    return ans
 
 def part_2_answer():
+    start_time = time.time()
     graph, _, finishing_point = get_input_values('Dec12/input.txt')
 
     shortest_path = 1e9
@@ -80,7 +93,9 @@ def part_2_answer():
         if path_length < shortest_path:
             shortest_path = path_length
     
-    return shortest_path
+    ans = shortest_path
+    print(f"Ran in {time.time() - start_time} seconds")
+    return ans
 
 if __name__ == "__main__":
     part_1_sample()

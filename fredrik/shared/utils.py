@@ -1,5 +1,5 @@
 import inspect
-from typing import TypeVar
+from typing import Iterable, TypeVar
 
 T = TypeVar("T")
 
@@ -13,3 +13,7 @@ def read_input_to_string() -> str:
 def chunks(lst: list[T], n: int) -> list[T]:
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
+
+
+def drop_empty_rows(rows: Iterable[str], /) -> list[str]:
+    return [row for row in rows if row != ""]
