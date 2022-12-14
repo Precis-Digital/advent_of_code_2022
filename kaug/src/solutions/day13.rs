@@ -43,7 +43,7 @@ fn solution_2(input: &str) -> String {
 	let divider_2 = serde_json::to_value(vec![vec![6]]).unwrap();
 	packets.push(divider_1.clone());
 	packets.push(divider_2.clone());
-	packets.sort_by(|p1, p2| compare_pair(p1, p2).unwrap())
+	packets.sort_by(|p1, p2| compare_pair(p1, p2).unwrap());
 	
 	let pos_1 = packets.iter().position(|e|compare_pair(e, &divider_1) == Some(Ordering::Equal)).unwrap();
 	let pos_2 = packets.iter().position(|e|compare_pair(e, &divider_2) == Some(Ordering::Equal)).unwrap();
