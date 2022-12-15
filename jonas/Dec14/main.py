@@ -97,6 +97,7 @@ def drop_sand_grain(coord_system: list[list[str]], min_x: int) -> tuple[list[lis
     while True:
         next_sand_position = determine_next_sand_position(coord_system, current_sand_position)
         if next_sand_position == (500 - min_x, 0):
+            coord_system[next_sand_position[1]][next_sand_position[0]] = "o" 
             return coord_system, False
         if next_sand_position == None:
             coord_system[current_sand_position[1]][current_sand_position[0]] = "."
@@ -107,7 +108,7 @@ def drop_sand_grain(coord_system: list[list[str]], min_x: int) -> tuple[list[lis
             coord_system[current_sand_position[1]][current_sand_position[0]] = "."
         coord_system[next_sand_position[1]][next_sand_position[0]] = "o" 
         current_sand_position = next_sand_position
-        #print_coord_system(coord_system)
+        print_coord_system(coord_system)
         
     coord_system[current_sand_position[1]][current_sand_position[0]] = "o"
     return coord_system, True
@@ -120,12 +121,12 @@ def draw_rock_map(rock_paths: list[RockPath], min_x: int, max_x: int, min_y: int
     for rock_path in rock_paths:
         for coord in rock_path.path_coordinates:
             coord_system[coord[1] - min_y][coord[0] - min_x] = "🪨"
-            #print_coord_system(coord_system)
+            print_coord_system(coord_system)
 
     sand_counter = 0
     while True:
         coord_system, continue_dropping = drop_sand_grain(coord_system, min_x)
-        #print_coord_system(coord_system)
+        print_coord_system(coord_system)
         if not continue_dropping:
             break
         
@@ -160,7 +161,9 @@ def part_2_answer():
     return ans
 
 if __name__ == "__main__":
-    print(part_1_sample())
-    print(part_1_answer())
-    print(part_2_sample())
-    print(part_2_answer())
+    #part_1_sample()
+    #print(part_1_answer())
+    #print("Waiting to start Part 2...")
+    #time.sleep(2)
+    part_2_sample()
+    #part_2_answer()

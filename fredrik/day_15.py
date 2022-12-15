@@ -103,8 +103,8 @@ def undetectable(point: Point, sensors: Iterable[Sensor]) -> bool:
 
 
 def only_possible_location(point: Point, sensors: Iterable[Sensor]) -> bool:
-    if not integer_point(point=point):
-        return False
+    #if not integer_point(point=point):
+    #    return False
     if not within_boundary(point=point):
         return False
     if not undetectable(point=point, sensors=sensors):

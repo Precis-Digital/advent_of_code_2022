@@ -69,16 +69,10 @@ def compare_values(left_val, right_val):
     else:
         return compare_values([left_val], right_val)
 
-def sorter_func(left, right):
-    left_parsed = eval(left)
-    right_parsed = eval(right)
-
-    return compare_values(left_parsed, right_parsed)
-
 def get_divider_packet_indexes(sorted_values:list[str]) -> list[int]:
     values = []
     for divider in DIVIDER_PACKETS:
-        values.append(sorted_values.index(divider) + 1)
+        values.append(sorted_values.index(eval(divider)) + 1)
     return values
 
 def get_input_values(file_name: str, as_pairs: bool = True) -> list[DataPacketPair]:
@@ -106,19 +100,21 @@ def part_1_answer():
 
 def part_2_sample():
     start_time = time.time()
-    sorted_vals = sorted([val for val in get_input_values('Dec13/sample_input.txt', as_pairs=False) + DIVIDER_PACKETS], key=cmp_to_key(sorter_func))[::-1]
+    sorted_vals = sorted([eval(val) for val in get_input_values('Dec13/sample_input.txt', as_pairs=False) + DIVIDER_PACKETS], key=cmp_to_key(compare_values))[::-1]
     values = get_divider_packet_indexes(sorted_vals)
     ans = values[0] * values[1]
     print(f'Ran in {time.time() - start_time} seconds')
     return ans
 
+
 def part_2_answer():
     start_time = time.time()
-    sorted_vals = sorted([val for val in get_input_values('Dec13/input.txt', as_pairs=False) + DIVIDER_PACKETS], key=cmp_to_key(sorter_func))[::-1]
+    sorted_vals = sorted([eval(val) for val in get_input_values('Dec13/input.txt', as_pairs=False) + DIVIDER_PACKETS], key=cmp_to_key(compare_values))[::-1]
     values = get_divider_packet_indexes(sorted_vals)
     ans = values[0] * values[1]
     print(f'Ran in {time.time() - start_time} seconds')
     return ans
 
 if __name__ == "__main__":
-    part_2_sample()
+    part_1_answer()
+    part_2_answer()
