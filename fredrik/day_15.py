@@ -48,7 +48,7 @@ class Sensor:
     beacon_x: int
     beacon_y: int
 
-    @property
+    @functools.cached_property
     def beacon_distance(self):
         return manhattan_distance(
             x1=self.x, x2=self.beacon_x, y1=self.y, y2=self.beacon_y
