@@ -108,10 +108,10 @@ fn x_min_x_max(sensors: &Vec<Sensor>) -> (i64, i64) {
 
 	for sensor in sensors {
 		if sensor.pos.x - sensor.distance < x_min {
-			x_min = sensor.pos.x - sensor.distance
+			x_min = sensor.pos.x - sensor.distance;
 		}
 		if sensor.pos.x + sensor.distance > x_max {
-			x_max = sensor.pos.x + sensor.distance
+			x_max = sensor.pos.x + sensor.distance;
 		}
 	}
 
@@ -129,15 +129,15 @@ fn parser(input: &str) -> Vec<Sensor> {
 			sensor_x,
 			sensor_y,
 			beacon_x,
-			beacon_y) 
-		= sscanf!(line, "Sensor at x={i64}, y={i64}: closest beacon is at x={i64}, y={i64}").unwrap();
+			beacon_y
+		) = sscanf!(line, "Sensor at x={i64}, y={i64}: closest beacon is at x={i64}, y={i64}").unwrap();
 		let sensor_pos = Point { x: sensor_x, y: sensor_y };
 		let beacon_pos = Point { x: beacon_x, y: beacon_y };
 		sensors.push(Sensor {
 			distance: manhattan(&sensor_pos, &beacon_pos),
 			pos: sensor_pos,
 			beacon: beacon_pos
-		})
+		});
 	}
 	sensors
 }
