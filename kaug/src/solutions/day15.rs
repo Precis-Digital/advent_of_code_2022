@@ -124,8 +124,13 @@ fn manhattan(a: &Point, b: &Point) -> i64 {
 
 fn parser(input: &str) -> Vec<Sensor> {
 	let mut sensors = Vec::new();
-    for line in input.lines() {
-		let (sensor_x, sensor_y, beacon_x, beacon_y) = sscanf!(line, "Sensor at x={i64}, y={i64}: closest beacon is at x={i64}, y={i64}").unwrap();
+	for line in input.lines() {
+		let (
+			sensor_x,
+			sensor_y,
+			beacon_x,
+			beacon_y) 
+		= sscanf!(line, "Sensor at x={i64}, y={i64}: closest beacon is at x={i64}, y={i64}").unwrap();
 		let sensor_pos = Point { x: sensor_x, y: sensor_y };
 		let beacon_pos = Point { x: beacon_x, y: beacon_y };
 		sensors.push(Sensor {
@@ -139,7 +144,7 @@ fn parser(input: &str) -> Vec<Sensor> {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+	use super::*;
 
 	const SAMPLE: &str = "Sensor at x=2, y=18: closest beacon is at x=-2, y=15
 Sensor at x=9, y=16: closest beacon is at x=10, y=16
