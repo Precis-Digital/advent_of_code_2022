@@ -1,0 +1,38 @@
+use crate::{solution::Solution, input};
+
+pub struct Day{DAY};
+
+impl Solution for Day{DAY} {
+	fn name(&self) -> &'static str {
+		"Day {DAY}"
+	}
+
+	fn part_1(&self) -> String {
+		parser(input::load({DAY}).as_str())
+	}
+
+	fn part_2(&self) -> String {
+		parser(input::load({DAY}).as_str())
+	}
+}
+
+fn parser(input: &str) -> String {
+    String::from("")
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+	const SAMPLE: &str = "";
+
+	#[test]
+	fn part_1() {
+		assert_eq!(parser(&SAMPLE), "");
+	}
+
+	#[test]
+	fn part_2() {
+		assert_eq!(parser(&SAMPLE), "");
+	}
+}
