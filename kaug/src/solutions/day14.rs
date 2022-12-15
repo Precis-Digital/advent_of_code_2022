@@ -1,4 +1,4 @@
-use std::{collections::HashSet, cmp::{min, max}};
+use std::{collections::HashMap};
 use crate::{solution::Solution, input};
 
 pub struct Day14;
@@ -10,7 +10,6 @@ impl Solution for Day14 {
 
 	fn part_1(&self) -> String {
 		solution_1(input::load(14).as_str())
-		//String::from("")
 	}
 
 	fn part_2(&self) -> String {
@@ -18,110 +17,102 @@ impl Solution for Day14 {
 	}
 }
 
-fn solution_1(input: &str) -> String {
-	let rocks = parse(input);
-	let mut sand: HashSet<(i32, i32)> = HashSet::new();
+#[derive(Debug, Eq, Hash, PartialEq)]
+struct Point {
+    x: i32,
+    y: i32,
+}
 
-	loop {
-		let obstacles: HashSet<(i32, i32)> = rocks.union(&sand).copied().collect();
-		let mut current = (500, 0);
-		loop {
-			let down = (current.0, current.1 + 1);
-			if down.1 > 2000 {
-				return sand.len().to_string()
+fn solution_1(input: &str) -> String {
+	let mut grid = parse(input);
+	let mut count = 0;
+	let max_y = grid.iter().map(|(p, _)| p.y).max().unwrap();
+	let mut sand = Point {x:0, y:0};
+	while sand.y <= max_y {
+		sand = Point{x:500, y:0};
+		while !grid.contains_key(&sand) && sand.y <= max_y {
+			if simulate_fall(&grid, &mut sand) {
+				let p = Point{x:sand.x, y: sand.y};
+				grid.insert(p, true);
+				count += 1;
 			}
-			if obstacles.contains(&down) {
-				let left = (current.0 - 1, current.1 + 1);
-				if !obstacles.contains(&left) {
-					current = left;
-					continue;
-				}
-				let right = (current.0 + 1, current.1 + 1);
-				if !obstacles.contains(&right) {
-					current = right;
-					continue;
-				}
-				sand.insert(current);
-			} else {
-				current = down;
-				continue;
-			}
-			break;
 		}
 	}
+	count.to_string()
 }
 
 fn solution_2(input: &str) -> String {
-	let rocks = parse(input);
-	let mut sand: HashSet<(i32, i32)> = HashSet::new();
-	let end = rocks.iter().map(|(_, y)| y).max().unwrap();
-	loop {
-		let obstacles: HashSet<(i32, i32)> = rocks.union(&sand).copied().collect();
-		let mut current = (500,0);
-		if obstacles.contains(&current) {
-			return sand.len().to_string();
-		}
-		loop {
-			let down = (current.0, current.1 + 1);
-			if down.1 == end + 2 {
-				sand.insert(current);
-				break;
+	let mut grid = parse(input);
+	let mut count = 0;
+	let max_y = grid.iter().map(|(p, _)| p.y).max().unwrap();
+	let floor = max_y + 2;
+	while !grid.contains_key(&Point{x:500, y:0}) {
+		let mut sand = Point{x:500, y:0};
+		while !grid.contains_key(&sand) && sand.y <= floor - 1 {
+			if simulate_fall(&grid, &mut sand) {
+				let p = Point{x: sand.x, y: sand.y};
+				grid.insert(p, true);
+				count += 1;
 			}
-			if obstacles.contains(&down) {
-				let left = (current.0 - 1, current.1 + 1);
-				if !obstacles.contains(&left) {
-					current = left;
-					continue;
-				}
-				let right = (current.0 + 1, current.1 + 1);
-				if !obstacles.contains(&right) {
-					current = right;
-					continue;
-				}
-				sand.insert(current);
-			} else {
-				current = down;
-				continue;
-			}
-			break;
-		}
-	}
-}
-
-fn parse(input: &str) -> HashSet<(i32, i32)> {
-	let mut set = HashSet::new();
-	for line in input.lines() {
-		let points: Vec<(i32, i32)> = line
-			.split(" -> ")
-			.map(|pair| {
-				let parts: Vec<&str> = pair.split(",").collect();
-				(parts[0].parse().unwrap(), parts[1].parse().unwrap())
-			})
-			.collect();
-
-		for window in points.windows(2) {
-			let a = window[0];
-			let b = window[1];
-
-			if a.0 == b.0 {
-				let y1 = min(a.1, b.1);
-				let y2 = max(a.1, b.1);
-				for y in y1..=y2 {
-					set.insert((a.0, y));
-				}
-			} else {
-				let x1 = min(a.0, b.0);
-				let x2 = max(a.0, b.0);
-				for x in x1..=x2 {
-					set.insert((x, a.1));
-				}
+			if floor == sand.y + 1 {
+				let p = Point{x: sand.x, y: sand.y};
+				grid.insert(p, true);	
+				count += 1;		
 			}
 		}
 	}
-
-	set
+	count.to_string()
 }
 
+fn simulate_fall(grid: &HashMap<Point, bool>, sand: &mut Point) -> bool {
+    if !grid.contains_key(&Point { x: sand.x, y: sand.y + 1 }) {
+        sand.y += 1;
+    } else if !grid.contains_key(&Point { x: sand.x - 1, y: sand.y + 1 }) {
+        sand.x -= 1;
+        sand.y += 1;
+    } else if !grid.contains_key(&Point { x: sand.x + 1, y: sand.y + 1 }) {
+        sand.x += 1;
+        sand.y += 1;
+    } else {
+        return true;
+    }
+    false
+}
+
+fn parse(input: &str) -> HashMap<Point, bool> {
+    let mut grid = HashMap::new();
+    let lines: Vec<&str> = input.split("\n").collect();
+
+    for line in lines.iter() {
+        let points: Vec<&str> = line.split(" -> ").collect();
+        let mut prev_point = Point { x: 0, y: 0 };
+
+        for (i, p) in points.iter().enumerate() {
+            let coords: Vec<&str> = p.split(",").collect();
+            let x = coords[0].parse().unwrap();
+            let y = coords[1].parse().unwrap();
+            let curr_point = Point { x, y };
+
+            if i > 0 {
+                let min_x = curr_point.x.min(prev_point.x);
+                let max_x = curr_point.x.max(prev_point.x);
+                let min_y = curr_point.y.min(prev_point.y);
+                let max_y = curr_point.y.max(prev_point.y);
+
+                for i in min_x..=max_x {
+                    grid.insert(Point { x: i, y }, true);
+                }
+                for j in min_y..=max_y {
+                    grid.insert(Point { x, y: j }, true);
+                }
+            } else {
+                grid.insert(Point{ x:curr_point.x, y:curr_point.y}, true);
+            }
+            prev_point = curr_point;
+        }
+    }
+    grid
+}
 #[cfg(test)]
 mod test {
 	use super::*;
