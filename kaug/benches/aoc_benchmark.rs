@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use criterion::{criterion_group, criterion_main, Criterion};
 use kaug::*;
 
@@ -14,7 +12,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 			solutions::get(day).part_1()
 		}));
 		c.bench_function(format!("{}_part_2", &day).as_str(), |b| b.iter(|| {
-			solutions::get(day).part_1()
+			solutions::get(day).part_2()
 		}));	
 	}
 
