@@ -39,7 +39,7 @@ impl Sensor {
 	fn contains(&self, b: &Point) -> bool {
 		self.distance >= manhattan(&self.pos, b)
 	}
-	
+
 	fn new() -> Self {
 		Self {
 			pos: Point { x: 0, y: 0 },
@@ -88,9 +88,7 @@ fn solution_2(input: &str, coord_max: i64) -> String {
 			break;
 		}
 
-		let x_dist = (covering_sensor.pos.x - curr.x).abs();
-		let y_dist = (covering_sensor.pos.y - curr.y).abs();
-		let skip = covering_sensor.distance - y_dist + x_dist + 1;
+		let skip = covering_sensor.distance - manhattan(&covering_sensor.pos, &curr) + 1;
 
 		if curr.x + skip > coord_max {
 			curr.x = 0;
