@@ -52,7 +52,10 @@ def solution1(data: list[tuple[int, int, int, int, int]], y: int) -> int:
     return ans
 
 def solution2(data, range_min = 0, range_max = 4000000):
+    """ take about 1 second per 100K iterations"""
     for y in range(range_min, range_max):
+        if y % 100000 == 0:
+            print(f'processing y={y}')
         ranges = []
         for sensor_x, sensor_y, beacon_x, beacon_y, distance in data:
             x: tuple[int, int] = compute_x_range_from_y_and_manhattan_distance(y, sensor_x, sensor_y, distance)
@@ -67,10 +70,10 @@ def solution2(data, range_min = 0, range_max = 4000000):
 
 if __name__ == '__main__':
     data = get_data('inputs/day-15-sample.txt')
-    # assert solution1(data, y=10) == 26
+    assert solution1(data, y=10) == 26
     assert solution2(data, range_min=0, range_max=20) == 56000011
 
     data = get_data('inputs/day-15-input.txt')
     #assert solution1(data) == 26
-    print(solution1(data, y=2000000))
-    # solution2(data, range_min=0, range_max=4000000)
+    assert solution1(data, y=2000000) == 4748135
+    assert solution2(data, range_min=0, range_max=4000000) == 13743542639657 # takes 30 seconds or so
