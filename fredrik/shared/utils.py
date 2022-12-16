@@ -1,4 +1,6 @@
+import collections
 import inspect
+import sys
 from typing import Iterable, TypeVar
 
 T = TypeVar("T")
@@ -17,3 +19,29 @@ def chunks(lst: list[T], n: int) -> list[T]:
 
 def drop_empty_rows(rows: Iterable[str], /) -> list[str]:
     return [row for row in rows if row != ""]
+
+
+def shortest_path_length(graph: dict[T, list[T]], start: T, end: T) -> int:
+    queue = collections.deque([start])
+    visited = set()
+    distances = {start: 0}
+    while queue:
+        node = queue.popleft()
+
+        if node in visited:
+            continue
+
+        visited.add(node)
+
+        if node == end:
+            return distances[node]
+
+        neighbors = graph[node]
+        for neighbor in neighbors:
+            if neighbor in visited:
+                continue
+
+            queue.append(neighbor)
+            distances[neighbor] = distances[node] + 1
+
+    return sys.maxsize
