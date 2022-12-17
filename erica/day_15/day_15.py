@@ -49,8 +49,31 @@ def part_1():
     print(f"Part 1: {len(list(set(spot)))}")  # part 1: 4811413
 
 
+def part_2():
+    cords = get_sensor_and_beacon()
+
+    sensors = [Sensor(sensor=cord[0], beacon=cord[1]) for cord in cords]
+
+    a_coff = set()
+    b_coff = set()
+    for s in sensors:
+        a_coff.add(s.y-s.x+s.distance+1)
+        a_coff.add(s.y-s.x-s.distance-1)
+        b_coff.add(s.x+s.y+s.distance+1)
+        b_coff.add(s.x+s.y-s.distance-1)
+
+    bound = 4000000
+    for a in a_coff:
+        for b in b_coff:
+            p = ((b-a)//2, (a+b)//2)
+            if all(0 < c < bound for c in p):
+                if all(manhattan_distance_between_sensor_and_beacon(p, s.sensor) > s.distance for s in sensors):
+                    print(f"Part 2: {bound*p[0] + p[1]} ") # part 2: 13171855019123
+
+
 if __name__ == "__main__":
     part_1()
+    part_2()
 
 
 
