@@ -79,7 +79,7 @@ def part_2():
                     > s.distance
                     for s in sensors
                 ):
-                    print(f"Part 2: {bound*p[0] + p[1]} ")  # part 2: 13171855019123
+                    print(f"Part 2: {bound * p[0] + p[1]} ")  # part 2: 13171855019123
 
 
 if __name__ == "__main__":
