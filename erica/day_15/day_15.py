@@ -34,6 +34,8 @@ class Sensor:
         self.x = sensor[0]
         self.y = sensor[1]
         self.distance = manhattan_distance_between_sensor_and_beacon(sensor, beacon)
+        self.pos_coff = (self.y - self.x + self.distance + 1, self.y - self.x - self.distance - 1)
+        self.neg_coff = (self.x + self.y + self.distance + 1, self.x + self.y - self.distance - 1)
 
 
 def part_1():
@@ -64,10 +66,10 @@ def part_2():
     a_coff = set()
     b_coff = set()
     for s in sensors:
-        a_coff.add(s.y - s.x + s.distance + 1)
-        a_coff.add(s.y - s.x - s.distance - 1)
-        b_coff.add(s.x + s.y + s.distance + 1)
-        b_coff.add(s.x + s.y - s.distance - 1)
+        a_coff.add(s.pos_coff[0])
+        a_coff.add(s.pos_coff[1])
+        b_coff.add(s.neg_coff[0])
+        b_coff.add(s.neg_coff[1])
 
     bound = 4000000
     for a in a_coff:
@@ -83,5 +85,5 @@ def part_2():
 
 
 if __name__ == "__main__":
-    part_1()
+    # part_1()
     part_2()
