@@ -72,34 +72,54 @@ fn solution_1(input: &str, row: i64) -> String {
 
 fn solution_2(input: &str, coord_max: i64) -> String {
 	let sensors = parser(&input);
-	let mut curr = Point {x: 0, y: 0};
-	let mut covering_sensor = &Sensor::new();
-	loop {
-		let mut covered = false;
-		for sensor in &sensors {
-			covered = sensor.contains(&curr);
-			if covered {
-				covering_sensor = sensor;
-				break;
-			}
-		}
-
-		if !covered {
+	let mut possible_beacon_location = Point {x: 0, y: 0};
+	// Found inspiration from this visual https://www.reddit.com/r/adventofcode/comments/zmfwg1/2022_day_15_part_2_seekin_for_the_beacon/
+	// So bascially just iterate around the perimiter of each sensor
+	// breaks the loop if we have found the possible beacon location
+	for sensor in &sensors {
+		if possible_beacon_location.x > 0 {
 			break;
 		}
 
-		let skip = covering_sensor.distance - manhattan(&covering_sensor.pos, &curr) + 1;
+		let min_y = sensor.pos.y - sensor.distance + 1;
+		let max_y = sensor.pos.y + sensor.distance + 1;
 
-		if curr.x + skip > coord_max {
-			curr.x = 0;
-			curr.y += 1;
-		} else {
-			curr.x += skip;
+		for y in min_y..=max_y {
+			
+			if 0 > y || y > coord_max {
+				continue;
+			}
+
+			let left_x = sensor.pos.x - (sensor.distance - (sensor.pos.y - y).abs() + 1);
+			let right_x = sensor.pos.x + (sensor.distance - (sensor.pos.y - y).abs() + 1);
+			let left_possible = Point{x: left_x, y};
+			let right_possible = Point{x: right_x, y};
+
+			if !is_covered(&left_possible, &sensors) && left_x < coord_max {
+				possible_beacon_location = left_possible;
+				break;
+			}
+
+			if !is_covered(&right_possible, &sensors) && right_x < coord_max {
+				possible_beacon_location = right_possible;
+				break;
+			}
+
 		}
 	}
 
-	(curr.x  * 4000000 + curr.y).to_string()
+	(possible_beacon_location.x  * 4000000 + possible_beacon_location.y).to_string()
 
+}
+
+fn is_covered(possible_beacon_location: &Point, sensors: &Vec<Sensor>) -> bool{
+	let mut covered = false;
+	for sensor in sensors {
+		if sensor.contains(&possible_beacon_location) {
+			covered = true;
+		}
+	}
+	covered
 }
 
 fn x_min_x_max(sensors: &Vec<Sensor>) -> (i64, i64) {
