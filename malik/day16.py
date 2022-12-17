@@ -4,6 +4,7 @@
 import re
 from typing import Union
 from dataclasses import dataclass
+
 from collections import defaultdict
 
 INPUT_REGEX = r"Valve (\w+) has flow rate=(\d+); tunnels? leads? to valves? ([A-Z, ]+)"
@@ -37,6 +38,9 @@ class Node:
     action_open_valve: bool
     state: tuple[bool, ...]
     # prior_steps: tuple[str]
+
+    def set_state(self, state: tuple[bool, ...]):
+        self.state = state
 
     def get_state(self, graph: dict[str, dict[str, Union[int, list[str]]]], neighbor: str, open_valve: bool) -> tuple[bool, ...]:
         """
@@ -100,26 +104,27 @@ class Node:
             return self.name == other.name and self.state == other.state
         return NotImplemented
 
-
+def get_init_flow(graph):
+    init_flow_state = [False] * len(graph)
+    node_index = {node: i for i, node in enumerate(graph)}
+    for node in graph:
+        if graph[node]["flow"] == 0:
+            init_flow_state[node_index[node]] = True
+    return tuple(init_flow_state)
 
 
 def bfs(graph):
     """
     Find the path with the highest reward
     """
-    init_flow_state = [False] * len(graph)
-    node_index = {node: i for i, node in enumerate(graph)}
-    print(node_index)
-    for node in graph:
-        if graph[node]["flow"] == 0:
-            init_flow_state[node_index[node]] = True
+    init_flow_state = get_init_flow(graph)
 
     start_node = Node(
         timestamp=0,
         name="AA",
         flow=graph["AA"]['flow'],
         action_open_valve=False,
-        state=tuple(init_flow_state),
+        state=init_flow_state,
     )
     visited = set()
     queue: set[tuple[int,Node]] = {(0, start_node)}
@@ -146,12 +151,83 @@ def bfs(graph):
         i += 1
     return max_reward, max_reward_node
 
-# def generate_neighbors(node: str, time_stamp: int, )
+def bfs_with_2_players(graph):
+    """
+    version of bfs but inseted 2 agents are traversing the graphs simultaneously
+    :param graph:
+    :return:
+    """
+    max_time_stamp = 26
+    init_flow: tuple[bool, ...] = get_init_flow(graph=graph)
+
+    start_node1 = Node(
+        timestamp=0,
+        name="AA",
+        flow=graph["AA"]['flow'],
+        action_open_valve=False,
+        state=init_flow,
+    )
+    start_node2 = Node(
+        timestamp=0,
+        name="AA",
+        flow=graph["AA"]['flow'],
+        action_open_valve=False,
+        state=init_flow,
+    )
+
+    visited = set()
+    queue: set[tuple[int,Node, Node]] = {(0, start_node1, start_node2)}
+
+    max_reward = 0
+    max_reward_node = None
+    i = 0
+    while queue and i < 10000000:
+        cumm_reward, node1, node2 = queue.pop()
+        if i % 10000 == 0:
+            print(i, 'queue-len', len(queue), len(set(queue)), len(visited))
+
+        if node1.timestamp == max_time_stamp \
+                or node2.timestamp == max_time_stamp \
+                or all(node1.state) \
+                or all(node2.state):
+            # print("winner", node, cumm_reward)
+            if cumm_reward > max_reward:
+                max_reward = cumm_reward
+                max_reward_node = (node1, node2)
+        for neighbor1 in node1.get_neighbors(graph):
+            for neighbor2 in node2.get_neighbors(graph):
+                new_cumm_reward = cumm_reward \
+                                  + neighbor1.future_total_reward(max_time_stamp=max_time_stamp) \
+                                  + neighbor2.future_total_reward(max_time_stamp=max_time_stamp)
+
+                n1_state = neighbor1.state
+                n2_state = neighbor2.state
+                if n1_state != n2_state:
+                    # merge states
+                    new_state = tuple(n1 or n2 for n1, n2 in zip(n1_state, n2_state))
+                    neighbor1.set_state(new_state)
+                    neighbor2.set_state(new_state)
+
+                new_node = (new_cumm_reward, neighbor1, neighbor2)
+
+                if new_node not in visited:
+                    queue.add(new_node)
+
+        visited.add((cumm_reward, node1, node2))
+        i += 1
+    return max_reward, max_reward_node
+
+
+
+
 
 def solution1(graph):
     # takes about 10 seconds
     max_reward, node = bfs(graph=graph)
     return max_reward
+
+def solution2(graph):
+    bfs_with_2_players(graph=graph)
 
 if __name__ == "__main__":
 
@@ -170,6 +246,7 @@ if __name__ == "__main__":
     # example
     graph = get_data("inputs/day-16-sample.txt")
     assert solution1(graph=graph) == 1651
+    # print(solution2(graph=graph))
 
 
     graph = get_data("inputs/day-16-input.txt")
@@ -177,6 +254,6 @@ if __name__ == "__main__":
     # max length....but this works as well
 
     # print(djikstras_algorithm(graph=graph))
-    assert solution1(graph=graph) == 1915
+    # assert solution1(graph=graph) == 1915
 
 
