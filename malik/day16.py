@@ -102,67 +102,6 @@ class Node:
 
 
 
-def djikstras_algorithm(graph):
-    """
-    Find the path with the highest reward
-    """
-    init_flow_state = [False] * len(graph)
-    node_index = {node: i for i, node in enumerate(graph)}
-    print(node_index)
-    for node in graph:
-        if graph[node]["flow"] == 0:
-            init_flow_state[node_index[node]] = True
-
-    start_node = Node(
-        timestamp=0,
-        name="AA",
-        flow=graph["AA"]['flow'],
-        action_open_valve=False,
-        state=tuple(init_flow_state),
-        # prior_steps=("start",),
-    )
-    max_flow = sum([graph[node]["flow"]*30 for node in graph])
-    print(max_flow)
-    total_reward = defaultdict(lambda: max_flow)
-    total_reward[start_node] = max_flow
-    visited = set()
-    queue: set[Node] = {start_node}
-
-    max_reward = max_flow
-    max_reward_node = None
-    i = 0
-    while queue and i < 10000000:
-        # print(total_reward)
-        node = min(queue, key=lambda x: total_reward[x])
-        cumm_reward = total_reward[node]
-
-        if i % 1000 == 0:
-            print('queue-len', len(queue), len(set(queue)), len(visited))
-            print(node, cumm_reward)
-
-        if node.timestamp == 30 or all(node.state):
-            # print("winner", node, cumm_reward)
-            if cumm_reward < max_reward:
-                max_reward = cumm_reward
-                max_reward_node = node
-        else:
-            for neighbor in node.get_neighbors(graph):
-                if neighbor not in visited:
-                    # print(node.name, neighbor.name, cumm_reward, neighbor.future_total_reward(), total_reward[neighbor.name])
-                    new_cumm_reward = cumm_reward - neighbor.future_total_reward()
-                    if new_cumm_reward < total_reward[neighbor]:
-                        total_reward[neighbor] = new_cumm_reward
-                    queue.add(neighbor)
-        visited.add(node)
-        queue.remove(node)
-        i += 1
-        # queue = sorted(queue, reverse=True, key=lambda x: x[0])
-
-    # for k,v in sorted(total_reward.items(), key=lambda x : x[1]):
-    #     # if k.timestamp == 24:
-    #         print(v, k)
-    return max_reward, max_reward_node
-
 
 def bfs(graph):
     """
