@@ -97,6 +97,7 @@ def drop_sand_grain(coord_system: list[list[str]], min_x: int) -> tuple[list[lis
     while True:
         next_sand_position = determine_next_sand_position(coord_system, current_sand_position)
         if next_sand_position == (500 - min_x, 0):
+            coord_system[next_sand_position[1]][next_sand_position[0]] = "o" 
             return coord_system, False
         if next_sand_position == None:
             coord_system[current_sand_position[1]][current_sand_position[0]] = "."

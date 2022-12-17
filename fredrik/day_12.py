@@ -1,6 +1,3 @@
-import collections
-import sys
-
 from shared import utils
 
 Coordinate = tuple[int, int]
@@ -51,43 +48,13 @@ def heightmap_to_graph(heightmap: GridMap):
     }
 
 
-def shortest_path_length(
-    graph: {Coordinate, list[Coordinate]},
-    start: Coordinate,
-    end: Coordinate,
-) -> int:
-    queue = collections.deque([start])
-    visited = set()
-    distances = {start: 0}
-    while queue:
-        node = queue.popleft()
-
-        if node in visited:
-            continue
-
-        visited.add(node)
-
-        if node == end:
-            return distances[node]
-
-        neighbors = graph[node]
-        for neighbor in neighbors:
-            if neighbor in visited:
-                continue
-
-            queue.append(neighbor)
-            distances[neighbor] = distances[node] + 1
-
-    return sys.maxsize
-
-
 def shortest_hiking_trail_length(
     graph: Graph,
     starting_points: list[Coordinate],
     end: Coordinate,
 ) -> int:
     return min(
-        shortest_path_length(graph=graph, start=start, end=end)
+        utils.shortest_path_length(graph=graph, start=start, end=end)
         for start in starting_points
     )
 
@@ -100,7 +67,7 @@ def main() -> None:
     heightmap_raw = utils.read_input_to_string()
     heightmap, start, end = parse_heightmap(heightmap_raw=heightmap_raw)
     graph = heightmap_to_graph(heightmap=heightmap)
-    steps1 = shortest_path_length(graph=graph, start=start, end=end)
+    steps1 = utils.shortest_path_length(graph=graph, start=start, end=end)
 
     hiking_starts = find_hiking_starts(heightmap=heightmap)
     steps2 = shortest_hiking_trail_length(
