@@ -38,15 +38,7 @@ struct Sensor {
 impl Sensor {
 	fn contains(&self, b: &Point) -> bool {
 		self.distance >= manhattan(&self.pos, b)
-	}
-
-	fn new() -> Self {
-		Self {
-			pos: Point { x: 0, y: 0 },
-			beacon: Point { x: 0, y: 0 },
-			distance: 0
-		}
-	}
+	}	
 }
 
 fn solution_1(input: &str, row: i64) -> String {
@@ -71,55 +63,39 @@ fn solution_1(input: &str, row: i64) -> String {
 }
 
 fn solution_2(input: &str, coord_max: i64) -> String {
-	let sensors = parser(&input);
-	let mut possible_beacon_location = Point {x: 0, y: 0};
-	// Found inspiration from this visual https://www.reddit.com/r/adventofcode/comments/zmfwg1/2022_day_15_part_2_seekin_for_the_beacon/
-	// So bascially just iterate around the perimiter of each sensor
-	// breaks the loop if we have found the possible beacon location
+	let sensors = parser(input);
+	let mut possible_beacon = Point { x: 0, y: 0 };
+	let mut found_beacon = false;
+	
+	// Realized i don't have to check both sides of the sensor because
+	// the solution has to be on the outer perimiter of two or more sensors.
 	for sensor in &sensors {
-		if possible_beacon_location.x > 0 {
+		if found_beacon {
 			break;
 		}
 
-		let min_y = sensor.pos.y - sensor.distance + 1;
-		let max_y = sensor.pos.y + sensor.distance + 1;
-
-		for y in min_y..=max_y {
+		for y in sensor.pos.y - sensor.distance..=sensor.pos.y + sensor.distance {
 			
-			if 0 > y || y > coord_max {
+			if y < 0 || y > coord_max {
 				continue;
 			}
 
-			let left_x = sensor.pos.x - (sensor.distance - (sensor.pos.y - y).abs() + 1);
-			let right_x = sensor.pos.x + (sensor.distance - (sensor.pos.y - y).abs() + 1);
-			let left_possible = Point{x: left_x, y};
-			let right_possible = Point{x: right_x, y};
-
-			if !is_covered(&left_possible, &sensors) && left_x < coord_max {
-				possible_beacon_location = left_possible;
-				break;
+			let x = sensor.pos.x + (sensor.distance - (sensor.pos.y - y).abs() + 1);
+			
+			if x < 0 || x > coord_max {
+				continue;
 			}
 
-			if !is_covered(&right_possible, &sensors) && right_x < coord_max {
-				possible_beacon_location = right_possible;
+			possible_beacon = Point { x, y };
+
+			if !is_covered(&possible_beacon, &sensors) {
+				found_beacon = true;
 				break;
 			}
-
 		}
 	}
+	(possible_beacon.x  * 4000000 + possible_beacon.y).to_string()
 
-	(possible_beacon_location.x  * 4000000 + possible_beacon_location.y).to_string()
-
-}
-
-fn is_covered(possible_beacon_location: &Point, sensors: &Vec<Sensor>) -> bool{
-	let mut covered = false;
-	for sensor in sensors {
-		if sensor.contains(&possible_beacon_location) {
-			covered = true;
-		}
-	}
-	covered
 }
 
 fn x_min_x_max(sensors: &Vec<Sensor>) -> (i64, i64) {
@@ -136,6 +112,16 @@ fn x_min_x_max(sensors: &Vec<Sensor>) -> (i64, i64) {
 	}
 
 	(x_min, x_max)
+}
+
+fn is_covered(possible_beacon_location: &Point, sensors: &Vec<Sensor>) -> bool{
+	let mut covered = false;
+	for sensor in sensors {
+		if sensor.contains(&possible_beacon_location) {
+			covered = true;
+		}
+	}
+	covered
 }
 
 fn manhattan(a: &Point, b: &Point) -> i64 {
