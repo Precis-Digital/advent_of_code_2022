@@ -1,5 +1,4 @@
-# notes, stopping conditions
-# all valves are open, hit 30 minute mark...
+# partially compelted
 
 import re
 from typing import Union
@@ -23,6 +22,36 @@ def get_data(fname: str) -> dict[str, dict[str, Union[int, list[str]]]]:
             output[g[0]] = {"idx": idx, "flow": int(g[1]), "neighbors": g[2].split(", ")}
             idx += 1
     return output
+
+
+def simple_bfs(graph, start, end):
+
+    queue = [(0, start)]
+    visited = set()
+
+    while queue:
+        path_len, n = queue.pop(0)
+        if n == end:
+            return path_len
+
+        for neighbor in graph[n]['neighbors']:
+            if neighbor not in visited:
+                queue.append((path_len + 1, neighbor))
+        visited.add(n)
+
+def compute_pairwise_distance(graph) -> dict[str, dict[str, int]]:
+    output = {}
+    for i in graph:
+        for j in graph:
+            if i != j:
+                # from_node = min(i, j)
+                # to_node = max(i, j)
+                dist: int = simple_bfs(graph=graph, start= i, end=j)
+                inner_dict: dict = output.get(i, {})
+                inner_dict[j] = dist
+                output[i] = inner_dict
+    return output
+
 
 @dataclass
 class Node:
@@ -84,6 +113,42 @@ class Node:
             )
         return neighbors
 
+    def get_neighbors_with_pairwise_distance(self, graph: dict[str, dict[str, Union[int, list[str]]]], pairwise_distance: dict[str, dict[str, int]]) -> list["Node"]:
+        """
+        using the pairwise distance to get the neighbors, simulate the time it takes to get to the neighbor
+        and turn on the value if it is not already on
+        :param graph:
+        :param pairwise_distance:
+        :return:
+        """
+
+        neighbors = []
+        for to_node, distance in pairwise_distance[self.name].items():
+            new_timestamp = self.timestamp + distance + 1
+            if new_timestamp > 30:
+                continue
+            if not self.state[graph[to_node]["idx"]]:
+                neighbors.append(
+                    Node(
+                        graph[to_node]["flow"],
+                        to_node,
+                        new_timestamp,
+                        True,
+                        self.get_state(graph, to_node, True),
+                    )
+                )
+        # if not self.state[graph[self.name]["idx"]]:
+        #     neighbors.append(
+        #         Node(
+        #             graph[self.name]["flow"],
+        #             self.name,
+        #             self.timestamp + 1,
+        #             True,
+        #             self.get_state(graph, self.name, True),
+        #         )
+        #     )
+        return neighbors
+
     def future_total_reward(self, max_time_stamp=30):
         """
         Returns the future total reward of the current node
@@ -94,11 +159,11 @@ class Node:
 
     def __hash__(self):
         "hash based on name and state"
-        return hash((self.name, self.state, self.action_open_valve))
+        return hash((self.name, self.state))
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.name == other.name and self.state == other.state and self.action_open_valve == other.action_open_valve
+            return self.name == other.name and self.state == other.state
         return NotImplemented
 
 def get_init_flow(graph):
@@ -110,7 +175,7 @@ def get_init_flow(graph):
     return tuple(init_flow_state)
 
 
-def bfs(graph):
+def bfs(graph, pairwise_distance=None):
     """
     Find the path with the highest reward
     """
@@ -140,8 +205,10 @@ def bfs(graph):
                 max_reward = cumm_reward
                 max_reward_node = node
         else:
-            for neighbor in node.get_neighbors(graph):
+            for neighbor in node.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance):
                 new_cumm_reward = cumm_reward + neighbor.future_total_reward()
+                # if node.timestamp == 0 and node.name == 'AA':
+                #     print(">>>", cumm_reward,  new_cumm_reward, neighbor)
                 if (new_cumm_reward, neighbor) not in visited:
                     queue.add((new_cumm_reward, neighbor))
         visited.add((cumm_reward, node))
@@ -149,7 +216,7 @@ def bfs(graph):
     return max_reward, max_reward_node
 
 
-def djikstras_algorithm_for_max_value_path(graph):
+def djikstras_algorithm_for_max_value_path(graph, pairwise_distance):
     """
     take as input the graph and compute a variant of djikstra's algorithm to calculate
     the highest value path
@@ -165,7 +232,7 @@ def djikstras_algorithm_for_max_value_path(graph):
         timestamp=0,
         name="AA",
         flow=graph["AA"]['flow'],
-        action_open_valve=False,
+        action_open_valve=True,
         state=init_flow_state,
         prior_steps=("start",)
     )
@@ -184,30 +251,23 @@ def djikstras_algorithm_for_max_value_path(graph):
         cumm_reward = distances[node]
         # print(node, cumm_reward)
         if i % 10000 == 0:
-            print(i, 'queue-len', len(queue), len(set(queue)), len(visited))
-
-        visited.add(node)
-        if node.timestamp == 30 or all(node.state):
-            # print("winner", node, cumm_reward)
-            if cumm_reward > max_reward:
-                max_reward = cumm_reward
-                max_reward_node = node
+            print(i, 'queue-len', len(queue), len(set(queue)), len(visited), max_reward)
+        # if node.timestamp == 30 or all(node.state):
+        final_reward = cumm_reward + node.timestamp
+        if final_reward > max_reward:
+            max_reward = final_reward
+            max_reward_node = node
         else:
-            for neighbor in node.get_neighbors(graph):
-                # figuring out the movement cost of -1 took me 2.5 days "haha"!!
-                new_cumm_reward = cumm_reward + neighbor.future_total_reward() - 1
+            for neighbor in node.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance):
+
+                new_cumm_reward = cumm_reward + neighbor.future_total_reward() - (neighbor.timestamp - node.timestamp)
                 if new_cumm_reward > distances[neighbor]:
                     distances[neighbor] = new_cumm_reward
                     queue.add(neighbor)
-
-                # if node.name == "BB" and node.timestamp == 5 and node.action_open_valve:
-                #     print(">>>>", neighbor, neighbor in visited, new_cumm_reward, distances[neighbor])
-                # if neighbor not in visited:
-                #     queue.add(neighbor)
-
-
+        visited.add(node)
         i += 1
-    max_reward = max_reward + max_reward_node.timestamp
+    print('num nodes checked', len(visited), 'iter', i)
+    max_reward = max_reward
     return max_reward, max_reward_node
 
 
@@ -286,9 +346,9 @@ def bfs_with_2_players(graph):
 
 
 
-def solution1(graph):
+def solution1(graph, pairwise_distance):
     # takes about 10 seconds
-    max_reward, node = bfs(graph=graph)
+    max_reward, node = bfs(graph=graph, pairwise_distance=pairwise_distance)
     return max_reward
 
 def solution2(graph):
@@ -297,34 +357,18 @@ def solution2(graph):
 if __name__ == "__main__":
 
 
-    # node = Node(flow=1, name="A", timestamp=2,  action_open_valve=True, state=(True, False))
-    # node2 = Node(flow=2, name="A", timestamp=6, action_open_valve=True, state=(True, False))
-    # node3 = Node(flow=2, name="A", timestamp=6, action_open_valve=True, state=(False, False))
-    #
-    # s = set()
-    # s.add(node)
-    # s.add(node2)
-    # s.add(node3)
-    # assert len(s) == 2
-    # print(s)
-    #
-    # example
     graph = get_data("inputs/day-16-sample.txt")
-    # assert solution1(graph=graph) == 1651
-    print("starting djikstra's ")
-    value, node = djikstras_algorithm_for_max_value_path(graph=graph)
+
+    pw_dist = compute_pairwise_distance(graph=graph)
+    value, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pw_dist)
     print(node, value)
     assert value == 1651
-    # print(solution2(graph=graph))
 
 
     graph = get_data("inputs/day-16-input.txt")
-    # not optimal solution is to do something with topological sorting and then
-    # max length....but this works as well
+    pw_dist = compute_pairwise_distance(graph=graph)
 
-    value, node = djikstras_algorithm_for_max_value_path(graph=graph) #== 1915
+    value, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pw_dist) #== 1915
+    print(value, node)
     assert value == 1915
-    # assert solution1(graph=graph) == 1915
-    # value, node = djikstras_algorithm_for_max_value_path(graph=graph)
-    # print(value, node)
 
