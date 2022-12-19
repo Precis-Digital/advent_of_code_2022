@@ -137,16 +137,6 @@ class Node:
                         self.get_state(graph, to_node, True),
                     )
                 )
-        # if not self.state[graph[self.name]["idx"]]:
-        #     neighbors.append(
-        #         Node(
-        #             graph[self.name]["flow"],
-        #             self.name,
-        #             self.timestamp + 1,
-        #             True,
-        #             self.get_state(graph, self.name, True),
-        #         )
-        #     )
         return neighbors
 
     def future_total_reward(self, max_time_stamp=30):
@@ -159,11 +149,11 @@ class Node:
 
     def __hash__(self):
         "hash based on name and state"
-        return hash((self.name, self.state))
+        return hash((self.name, self.state, self.action_open_valve))
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.name == other.name and self.state == other.state
+            return self.name == other.name and self.state == other.state and self.action_open_valve == other.action_open_valve
         return NotImplemented
 
 def get_init_flow(graph):
@@ -207,8 +197,6 @@ def bfs(graph, pairwise_distance=None):
         else:
             for neighbor in node.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance):
                 new_cumm_reward = cumm_reward + neighbor.future_total_reward()
-                # if node.timestamp == 0 and node.name == 'AA':
-                #     print(">>>", cumm_reward,  new_cumm_reward, neighbor)
                 if (new_cumm_reward, neighbor) not in visited:
                     queue.add((new_cumm_reward, neighbor))
         visited.add((cumm_reward, node))
@@ -252,18 +240,21 @@ def djikstras_algorithm_for_max_value_path(graph, pairwise_distance):
         # print(node, cumm_reward)
         if i % 10000 == 0:
             print(i, 'queue-len', len(queue), len(set(queue)), len(visited), max_reward)
-        # if node.timestamp == 30 or all(node.state):
+
+
+        # udpate final reward
         final_reward = cumm_reward + node.timestamp
         if final_reward > max_reward:
             max_reward = final_reward
             max_reward_node = node
-        else:
-            for neighbor in node.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance):
 
-                new_cumm_reward = cumm_reward + neighbor.future_total_reward() - (neighbor.timestamp - node.timestamp)
-                if new_cumm_reward > distances[neighbor]:
-                    distances[neighbor] = new_cumm_reward
-                    queue.add(neighbor)
+        # for neighbor in node.get_neighbors(graph):
+        for neighbor in node.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance):
+            new_cumm_reward = cumm_reward + neighbor.future_total_reward() - (neighbor.timestamp - node.timestamp)
+            # print(">>>", neighbor, new_cumm_reward)
+            if new_cumm_reward > distances[neighbor]:
+                distances[neighbor] = new_cumm_reward
+                queue.add(neighbor)
         visited.add(node)
         i += 1
     print('num nodes checked', len(visited), 'iter', i)
@@ -367,7 +358,7 @@ if __name__ == "__main__":
 
     graph = get_data("inputs/day-16-input.txt")
     pw_dist = compute_pairwise_distance(graph=graph)
-
+    print(pw_dist)
     value, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pw_dist) #== 1915
     print(value, node)
     assert value == 1915
