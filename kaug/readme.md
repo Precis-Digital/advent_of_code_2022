@@ -18,4 +18,7 @@ Running on a MacBook Pro (13-inch, M1, 16GB, 2020)
 | 12  | 144.16 µs | 92.506 µs |
 | 13  | 374.05 µs | 542.40 µs |
 | 14  | 3.1117 ms | 115.57 ms |
-| 15  | 74.406 ms | 68.457 ms | 
+| 15  | 74.406 ms | 68.457 ms |
+| 16* | 383.81 ms | 163.37 ms |
+
+\* **Day16** - was stuck for days so gave up and got some help for part 2 from a friend whom pointed me in the direction of bit-masking.
