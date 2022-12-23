@@ -3,7 +3,7 @@ from itertools import groupby
 import heapq
 
 
-text = pathlib.Path("erica/day_1/input_data.txt").read_text().split('\n')
+text = pathlib.Path("erica/day_01/input_data.txt").read_text().split('\n')
 
 
 def split_condition(value):

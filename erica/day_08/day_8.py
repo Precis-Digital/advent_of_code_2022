@@ -2,7 +2,7 @@ import numpy as np
 
 
 def get_data_into_list_of_lists() -> list[list[float]]:
-    with open("erica/day_8/input_data.txt") as f:
+    with open("erica/day_08/input_data.txt") as f:
         lines = f.readlines()
         return [[float(tree) for tree in line.strip()] for line in lines]
 

@@ -4,7 +4,7 @@ MAX_DISTANCE = math.hypot(1 - 2, 1 - 2)
 
 
 def get_data_into_lines() -> list[str]:
-    with open("erica/day_9/input_data.txt") as f:
+    with open("erica/day_09/input_data.txt") as f:
         line_rows = f.readlines()
         return [line_rows.strip() for line_rows in line_rows]
 

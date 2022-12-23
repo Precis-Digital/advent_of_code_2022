@@ -1,5 +1,5 @@
 def get_data_into_lines() -> list[str]:
-    with open("erica/day_7/input_data.txt") as f:
+    with open("erica/day_07/input_data.txt") as f:
         line_rows = f.readlines()
         return line_rows
 

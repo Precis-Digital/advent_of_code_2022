@@ -63,7 +63,7 @@ def rearrange(
 
 
 def main():
-    stacks, procedures = get_input("erica/day_5/input_data.txt")
+    stacks, procedures = get_input("erica/day_05/input_data.txt")
     columnar_stacks = stacks_from_row_to_columns(stacks=stacks)
     rearranged_stacks = rearrange(
         columnar_stacks=columnar_stacks, procedures=procedures

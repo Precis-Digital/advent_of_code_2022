@@ -30,7 +30,7 @@ def generate_elf_pairs_task_range(cleaning_pair: str) -> dict:
 
 
 if __name__ == "__main__":
-    cleaning_schema = get_cleaning_schema("erica/day_4/input_data.txt")
+    cleaning_schema = get_cleaning_schema("erica/day_04/input_data.txt")
     elf_pairs_tasks_range = [
         generate_elf_pairs_task_range(cleaning_pair=pair) for pair in cleaning_schema
     ]

@@ -2,7 +2,7 @@ def input_to_list(path: str) -> list:
     input = open(path).read()
     return input.splitlines()
 
-elf_list  = input_to_list("julius/day_1/day_1_input.txt")
+elf_list  = input_to_list("julius/day_01/day_1_input.txt")
 
 elf_dict = {"elf_1": []}
 counter = 1

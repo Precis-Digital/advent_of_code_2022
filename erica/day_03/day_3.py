@@ -46,7 +46,7 @@ def find_badges_in_backpacks(backpacks: List[str]) -> List[set]:
 
 
 def main():
-    backpacks = read_input_data("erica/day_3/input_data.txt")
+    backpacks = read_input_data("erica/day_03/input_data.txt")
     list_of_duplicates = find_duplicates_in_backpacks(backpacks=backpacks)
     backpack_values = sum(map_letters_to_values(duplicates=list_of_duplicates))
     print(backpack_values)  # part 1: 7826

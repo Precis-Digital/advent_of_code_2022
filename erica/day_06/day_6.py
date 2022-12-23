@@ -13,7 +13,7 @@ def find_marker(stream: str, unique_char: int) -> int:
 
 if __name__ == "__main__":
 
-    elf_stream = get_stream("erica/day_6/input_data.txt")
+    elf_stream = get_stream("erica/day_06/input_data.txt")
     part_1 = find_marker(stream=elf_stream, unique_char=4)
     print(f"part 1: {part_1}")  # Part1 : 1598
     part_2 = find_marker(stream=elf_stream, unique_char=14)
