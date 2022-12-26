@@ -79,41 +79,8 @@ class Node:
         new_state[graph[neighbor]["idx"]] = new_state[graph[neighbor]["idx"]] or open_valve
         return tuple(new_state)
 
-    def get_neighbors(self, graph: dict[str, dict[str, Union[int, list[str]]]]) -> list["Node"]:
-        """
-        Returns a list of nodes that are neighbors of the current node
-        """
-        neighbors = []
-        # can choose to move to a neighbor or
-        for neighbor in graph[self.name]["neighbors"]:
-            neighbors.append(
-                Node(
-                    graph[neighbor]["flow"],
-                    neighbor,
-                    self.timestamp + 1,
-                    False,
-                    self.get_state(graph, neighbor, False),
-                    # tuple(list(self.prior_steps) +[self.name + " OPEN" if self.action_open_valve else self.name]),
-                )
-            )
 
-        # if the valve is closed and the flow > 0 then you can choose to open it
-        if not self.state[graph[self.name]["idx"]]:
-            # if the valve is closed you can open it
-            # print(self)
-            neighbors.append(
-                Node(
-                    graph[self.name]["flow"],
-                    self.name,
-                    self.timestamp + 1,
-                    True,
-                    self.get_state(graph, self.name, True),
-                    # tuple(list(self.prior_steps) +[self.name]),
-                )
-            )
-        return neighbors
-
-    def get_neighbors_with_pairwise_distance(self, graph: dict[str, dict[str, Union[int, list[str]]]], pairwise_distance: dict[str, dict[str, int]]) -> list["Node"]:
+    def get_neighbors_with_pairwise_distance(self, graph: dict[str, dict[str, Union[int, list[str]]]], pairwise_distance: dict[str, dict[str, int]], max_time_stamp: int = 30) -> list["Node"]:
         """
         using the pairwise distance to get the neighbors, simulate the time it takes to get to the neighbor
         and turn on the value if it is not already on
@@ -125,7 +92,7 @@ class Node:
         neighbors = []
         for to_node, distance in pairwise_distance[self.name].items():
             new_timestamp = self.timestamp + distance + 1
-            if new_timestamp > 30:
+            if new_timestamp > max_time_stamp:
                 continue
             if not self.state[graph[to_node]["idx"]]:
                 neighbors.append(
@@ -153,7 +120,9 @@ class Node:
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.name == other.name and self.state == other.state and self.action_open_valve == other.action_open_valve
+            return self.name == other.name \
+                and self.state == other.state \
+                and self.action_open_valve == other.action_open_valve
         return NotImplemented
 
 def get_init_flow(graph):
@@ -225,7 +194,6 @@ def djikstras_algorithm_for_max_value_path(graph, pairwise_distance):
         prior_steps=("start",)
     )
     visited: set[Node] = set()
-    # queue: set[tuple[int,Node]] = {(0, start_node)}
     queue: set[Node] = {start_node}
     distances[start_node] = 0
 
@@ -263,7 +231,7 @@ def djikstras_algorithm_for_max_value_path(graph, pairwise_distance):
 
 
 
-def bfs_with_2_players(graph):
+def djikstras_with_2_players(graph, pairwise_distance):
     """
     version of bfs but inseted 2 agents are traversing the graphs simultaneously
     :param graph:
@@ -276,90 +244,112 @@ def bfs_with_2_players(graph):
         timestamp=0,
         name="AA",
         flow=graph["AA"]['flow'],
-        action_open_valve=False,
+        action_open_valve=True,
         state=init_flow,
     )
     start_node2 = Node(
         timestamp=0,
         name="AA",
         flow=graph["AA"]['flow'],
-        action_open_valve=False,
+        action_open_valve=True,
         state=init_flow,
     )
 
     visited = set()
-    queue: set[tuple[int,Node, Node]] = {(0, start_node1, start_node2)}
+    start = (start_node1, start_node2)
+    queue: set[tuple[Node, Node]] = {start}
+    distances = defaultdict(lambda : float("-inf"))
+    distances[start] = 0
 
     max_reward = 0
     max_reward_node = None
     i = 0
     while queue and i < 10000000:
-        cumm_reward, node1, node2 = queue.pop()
+        T = max(queue, key=lambda x: distances[x])
+        queue.remove(T)
+        node = T
+        cumm_reward = distances[node]
+        # print(i, (node[0].name, node[0].timestamp), (node[1].name, node[1].timestamp), cumm_reward)
         if i % 10000 == 0:
-            print(i, 'queue-len', len(queue), len(set(queue)), len(visited))
+            print(i, 'queue-len', len(queue), len(set(queue)), len(visited), max_reward)
 
-        if node1.timestamp == max_time_stamp \
-                or node2.timestamp == max_time_stamp \
-                or all(node1.state) \
-                or all(node2.state):
-            # print("winner", node, cumm_reward)
-            if cumm_reward > max_reward:
-                max_reward = cumm_reward
-                max_reward_node = (node1, node2)
+        # udpate final reward
+        final_reward = cumm_reward + node[0].timestamp + node[1].timestamp
+        if final_reward > max_reward:
+            print(max_reward, max_reward_node)
+            max_reward = final_reward
+            max_reward_node = node
 
-        # TODO: dont let the neighbors compete with each other,
-        for neighbor1 in node1.get_neighbors(graph):
-            for neighbor2 in node2.get_neighbors(graph):
+        # for neighbor in node.get_neighbors(graph):
+        agent1, agent2 = node
 
-                n1_state = neighbor1.state
-                n2_state = neighbor2.state
-                if n1_state != n2_state:
-                    # merge states
-                    # this line is slow!!!!
-                    new_state = tuple(n1 or n2 for n1, n2 in zip(n1_state, n2_state))
-                    neighbor1.set_state(new_state)
-                    neighbor2.set_state(new_state)
+        for n1 in agent1.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance, max_time_stamp=max_time_stamp):
+            for n2 in agent2.get_neighbors_with_pairwise_distance(graph, pairwise_distance=pairwise_distance, max_time_stamp=max_time_stamp):
+                if n1 != n2:
 
-                new_cumm_reward = cumm_reward \
-                                  + neighbor1.future_total_reward(max_time_stamp=max_time_stamp) \
-                                  + neighbor2.future_total_reward(max_time_stamp=max_time_stamp)
+                    new_state = tuple(a or b for a, b in zip(n1.state, n2.state))
+                    # new_timestamp = max(n1.timestamp, n2.timestamp)
+                    n1_prime = Node(
+                        timestamp=n1.timestamp,
+                        name=n1.name,
+                        flow=graph[n1.name]['flow'],
+                        action_open_valve=True,
+                        state=new_state
+                    )
+                    n2_prime = Node(
+                        timestamp=n2.timestamp,
+                        name=n2.name,
+                        flow=graph[n2.name]['flow'],
+                        action_open_valve=True,
+                        state=new_state
+                    )
 
-                new_node = (new_cumm_reward, neighbor1, neighbor2)
+                    new_node = (n1_prime, n2_prime)
+                    # if new_node in queue:
+                    #     print(new_node)
 
-                if new_node not in visited:
-                    queue.add(new_node)
-
-        visited.add((cumm_reward, node1, node2))
+                    new_cumm_reward = cumm_reward \
+                                      + n1_prime.future_total_reward(max_time_stamp=max_time_stamp) - (n1_prime.timestamp - agent1.timestamp) \
+                                      + n2_prime.future_total_reward(max_time_stamp=max_time_stamp) - (n2_prime.timestamp - agent2.timestamp)
+                    # print(">>>", neighbor, new_cumm_reward)
+                    if new_cumm_reward > distances[new_node]:
+                        distances[new_node] = new_cumm_reward
+                        queue.add(new_node)
+        visited.add(node)
         i += 1
+    print('num nodes checked', len(visited), 'iter', i)
+    max_reward = max_reward
     return max_reward, max_reward_node
 
 
-
-
-
-def solution1(graph, pairwise_distance):
+def solution1(graph):
     # takes about 10 seconds
-    max_reward, node = bfs(graph=graph, pairwise_distance=pairwise_distance)
+    pairwise_distance = compute_pairwise_distance(graph=graph)
+    max_reward, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pairwise_distance)
     return max_reward
 
 def solution2(graph):
-    return bfs_with_2_players(graph=graph)
-
+    pw_dist = compute_pairwise_distance(graph=graph)
+    value, node = djikstras_with_2_players(graph=graph, pairwise_distance=pw_dist)
+    return value
 if __name__ == "__main__":
 
 
     graph = get_data("inputs/day-16-sample.txt")
 
     pw_dist = compute_pairwise_distance(graph=graph)
-    value, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pw_dist)
-    print(node, value)
+    value = solution1(graph=graph)
+    # value, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pw_dist)
+    # print(node, value)
     assert value == 1651
 
+    value = solution2(graph=graph)
+    assert value == 1707
 
     graph = get_data("inputs/day-16-input.txt")
-    pw_dist = compute_pairwise_distance(graph=graph)
-    print(pw_dist)
-    value, node = djikstras_algorithm_for_max_value_path(graph=graph, pairwise_distance=pw_dist) #== 1915
-    print(value, node)
+    value = solution1(graph=graph)
     assert value == 1915
 
+    # this takes a long time laughing emoji :))), about 10 minutes
+    value = solution2(graph=graph)
+    assert value == 2772
