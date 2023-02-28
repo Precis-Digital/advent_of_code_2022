@@ -1,4 +1,9 @@
 import copy
+import timeit
+import time
+import sys
+
+sys.setrecursionlimit(1500)
 
 
 def get_data(fname):
@@ -125,8 +130,6 @@ def solution1(grid_dict, R, C):
 
 
 def solution2(grid_dict, R, C):
-    counter = 0
-    t = time.time()
     score = 0
     for r in range(R + 1):
         for c in range(C + 1):
@@ -156,22 +159,16 @@ def solution2(grid_dict, R, C):
     return score
 
 
-if __name__ == "__main__":
-    import time
+def run_large():
 
-    start = time.time()
-    grid_dict, R, C = get_data(fname="inputs/day-8-input.txt")
-    print("time to load data", time.time() - start)
-    print(R, C)
-
-    grid_dict_copy = copy.deepcopy(grid_dict)
-    print(solution1(grid_dict_copy, R, C))
+    grid_dict, R, C = get_data(fname="inputs/day-8-large.txt")
+    print(solution1(grid_dict, R, C))
     # print(COUNTER, COUNTER_CACHE_MISS)
-    grid_dict_copy = copy.deepcopy(grid_dict)
-    print(solution2(grid_dict_copy, R, C))
+    # grid_dict, R, C = get_data(fname="inputs/day-8-large.txt")
+    # print(solution2(grid_dict, R, C))
 
-    # print(
-    #     get_max_direction(
-    #         grid_dict, 2, 1, R, C, "right", max_value=grid_dict[(2, 1)]["value"]
-    #     )
-    # )
+
+if __name__ == "__main__":
+    import timeit
+
+    print("MW timeit 10 runs: ", timeit.timeit(run_large, number=10) / 10)

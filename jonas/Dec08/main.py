@@ -1,3 +1,7 @@
+import time
+import timeit
+
+
 class Tree:
     height: int
     x: int
@@ -37,7 +41,12 @@ def parse_trees(tree_map: dict[tuple[int, int], Tree]) -> dict[tuple[int, int], 
 
     return tree_map
 
+COUNTER = 0
+
 def calc_direction_visibility_and_score(direction: str, tree: Tree, tree_map: dict[tuple[int, int], Tree]) -> tuple[bool, int]:
+    # global COUNTER
+
+
     i = 1
     is_visible = True
     scenic_score = 0
@@ -55,6 +64,7 @@ def calc_direction_visibility_and_score(direction: str, tree: Tree, tree_map: di
 
     while tree_map.get(get_next_cords(direction, tree.x, tree.y, i)):
         next_tree = tree_map.get(get_next_cords(direction, tree.x, tree.y, i))
+        # COUNTER += 1
         if next_tree.height >= tree.height:
             is_visible = False
             scenic_score = i
@@ -66,13 +76,18 @@ def calc_direction_visibility_and_score(direction: str, tree: Tree, tree_map: di
     return is_visible, scenic_score
 
 # Sample 1 - 21
-print(len([tree for tree in get_trees("sample_input.txt").values() if tree.is_visible]))
+# print(len([tree for tree in get_trees("sample_input.txt").values() if tree.is_visible]))
 
 # Part 1 - 1700
-print(len([tree for tree in get_trees("input.txt").values() if tree.is_visible]))
+def large_input():
+    print(len([tree for tree in get_trees("/Users/malikwoods/Developer/advent_of_code_2022/malik/inputs/day-8-large.txt").values() if tree.is_visible]))
+    # print(max([tree.scenic_score for tree in get_trees("/Users/malikwoods/Developer/advent_of_code_2022/malik/inputs/day-8-large.txt").values()]))
 
-# Sample 2 - 8
-print(max([tree.scenic_score for tree in get_trees("sample_input.txt").values()]))
+print('JB: timeit', timeit.timeit(large_input, number=10)/10)
 
-# Part 2 - 470596
-print(max([tree.scenic_score for tree in get_trees("input.txt").values()]))
+# # Sample 2 - 8
+# print(max([tree.scenic_score for tree in get_trees("sample_input.txt").values()]))
+#
+# # Part 2 - 470596
+# print(max([tree.scenic_score for tree in get_trees("input.txt").values()]))
+
